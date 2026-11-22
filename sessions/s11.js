@@ -427,7 +427,7 @@
     const prog = h('div', { class: 'progressbar' }, h('div', { style: { width: '0%' } }));
     const lab = h('span', { class: 'muted' });
     const upd = () => { const st = Store.get('icf-progress', {}); const n = all.filter(p => st[p.id] && st[p.id].solved).length; prog.firstChild.style.width = (n / all.length * 100) + '%'; lab.textContent = `${n} / ${all.length} solved`; };
-    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Exam-level practice'), h('h2', null, `${all.length} hard problems that cover the whole session`),
+    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Exam-level practice'), h('h2', null, `${all.length} exam-level hard problems`),
       h('p', { class: 'lede', html: 'Each problem chains several steps, the way end-term questions do. Attempt first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab),
       h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Problem</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#practice" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));

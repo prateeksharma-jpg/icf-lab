@@ -197,6 +197,7 @@
       p.marks ? h('span', { class: 'pill' }, p.marks + ' marks') : null,
       status);
     const body = h('div', { class: 'prob-body' });
+    if (p.covers) body.append(h('p', { class: 'muted', style: { margin: '0 0 8px' }, html: '<b>Covers:</b> ' + p.covers }));
     body.append(h('div', { class: 'story', html: p.story(d) }));
     const partsBox = h('div');
     const rows = p.parts.map(pt => {

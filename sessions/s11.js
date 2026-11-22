@@ -378,7 +378,7 @@
     el.append(tn);
     el._fillThenNow = () => { tn.innerHTML = ''; if (window.S11_THENNOW) tn.append(window.S11_THENNOW()); };
     el._fillThenNow();
-    el.append(h('div', { class: 'card' }, h('h3', null, 'Test yourself on the case'), h('p', { class: 'muted' }, 'Three case-extension problems (D1–D3) are in Practice problems. Each changes one assumption and asks you to redo the chain by hand.'), h('button', { class: 'btn primary', onclick: () => { go('practice'); setTimeout(() => { const t = $('#topic-D'); t && t.scrollIntoView({ behavior: 'smooth' }); }, 50); } }, 'Go to the Marriott problems →')));
+    el.append(h('div', { class: 'card' }, h('h3', null, 'Test yourself on the case'), h('p', { class: 'muted' }, 'Practice problem P4 (Marriott in Rajasthan) runs the whole Marriott recipe on a new company, then asks what a single firm-wide rate costs in NPV.'), h('button', { class: 'btn primary', onclick: () => { go('practice'); setTimeout(() => { const t = $('#prob-s11-P4'); if (t) { t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); } }, 50); } }, 'Go to problem P4 →')));
     draw();
   }
 
@@ -422,50 +422,19 @@
   }
 
   /* =========================================================== PRACTICE */
-  function marriottProblems() {
-    const mk = (id, code, title, o, focus, parts, story, takeaway, hints) => ({
-      id, code, topic: 'D', marks: 5, title, data: o,
-      story: () => story,
-      solve: d => { const r = M.run(d); const out = { r }; parts.forEach(p => out[p.key] = p.get(r)); return out; },
-      parts: parts.map(p => ({ key: p.key, label: p.label, unit: p.unit })),
-      hints, steps: (d, res) => M.steps(d, res.r, focus), takeaway: () => takeaway
-    });
-    const base = M.defaults();
-    return [
-      mk('s11-D1', 'D1', 'Marriott with the 10-year rate and the arithmetic premium', Object.assign(M.defaults(), { rf: '10y', mrp: 'a-lt' }), ['lod', 'cs'],
-        [{ key: 'kl', label: '(a) Lodging cost of equity', unit: '%', get: r => r.lod.ke }, { key: 'wl', label: '(b) Lodging WACC', unit: '%', get: r => r.lod.wacc }, { key: 'wc', label: '(c) Contract Services WACC', unit: '%', get: r => r.cs.wacc }],
-        '<p>A consultant argues that Cohrs should use the <b>10-year Treasury (8.72%)</b> as the risk-free rate (for both K<sub>e</sub> and K<sub>d</sub>), and the <b>arithmetic</b> average spread of the S&P 500 over long-term government bonds, <b>7.43%</b>, as the market risk premium. Keep everything else as in the class solution (β = 0.97, D/E 0.70 for unlevering, t = 34%, asset weights, comparables as in class, Table A targets and spreads).</p>',
-        'Moving to the arithmetic premium raises every hurdle, CS\'s most (+1.4 points vs +0.5 for Lodging). The levered betas are similar (1.42 vs 1.52); the difference comes from weights: Lodging is 74% debt, so only 26% of its WACC feels the higher premium, while CS is 60% equity. The choice of premium matters more than the choice between 8.95% and 8.72%.',
-        ['The betas do not change: only R<sub>f</sub> and the MRP enter after relevering.', 'K<sub>d</sub> also changes: 8.72% + the division spread.']),
-      mk('s11-D2', 'D2', 'Marriott with its effective tax rate', Object.assign(M.defaults(), { tax: 'eff' }), ['firm', 'cs'],
-        [{ key: 'bu', label: '(a) Marriott\'s unlevered beta', unit: 'x', get: r => r.buF }, { key: 'wf', label: '(b) Marriott firm-wide WACC', unit: '%', get: r => r.firm.wacc }, { key: 'wc', label: '(c) Contract Services WACC', unit: '%', get: r => r.cs.wacc }],
-        '<p>Exhibit 1 shows Marriott paid $175.9m of tax on $398.9m of pre-tax income in 1987 (an effective rate of 44.1%). Redo the analysis using this effective rate everywhere (unlevering Marriott and the comparables, relevering, and the after-tax cost of debt) instead of the 34% statutory rate. Everything else follows the class solution.</p>',
-        'A higher tax rate lowers every WACC through a bigger tax shield, but it also changes the betas, because unlevering and relevering both use (1 − t). The marginal statutory rate (34% after the 1986 Act) is the right choice: the tax shield on the <i>next</i> rupee of interest is what matters.',
-        ['The tax rate enters four places: unlevering Marriott, unlevering the comparables, relevering, and K<sub>d</sub>(1 − t).']),
-      mk('s11-D3', 'D3', 'Marriott weighted by operating profit', Object.assign(M.defaults(), { w: 'op' }), ['cs'],
-        [{ key: 'wcs', label: '(a) Contract Services\' weight', unit: 'x', get: r => r.w.cs }, { key: 'bcs', label: '(b) Contract Services unlevered beta', unit: 'x', get: r => r.buCS }, { key: 'wc', label: '(c) Contract Services WACC', unit: '%', get: r => r.cs.wacc }],
-        '<p>Divisional market values are unknown. Instead of 1987 identifiable assets, a colleague proposes weighting the divisions by <b>1987 operating profit</b> (Exhibit 2: Lodging $263.9m, Contract Services $170.6m, Restaurants $82.4m). Recompute the backed-out Contract Services beta and its WACC. Everything else follows the class solution.</p>',
-        'The backed-out beta is very sensitive to the weights. CS\'s share rises from 27% (assets) to 33% (profit); the residual β<sub>U,M</sub> − w<sub>L</sub>β<sub>U,L</sub> − w<sub>R</sub>β<sub>U,R</sub> also rises slightly (0.285 → 0.309), but dividing by the larger weight dominates, so β<sub>U,CS</sub> falls from 1.05 to 0.94. Asset weights approximate the capital each division ties up, which is why the class uses them.',
-        ['Weight of CS = 170.6 ÷ (263.9 + 170.6 + 82.4).'])
-    ];
-  }
-
   function renderPractice(el) {
-    const all = window.S11_PROBLEMS.concat(marriottProblems());
-    const topics = Object.assign({}, window.S11_TOPICS, { D: { name: 'Marriott case extensions', blurb: 'Change one assumption in the case and redo the chain by hand.' } });
+    const all = window.S11_PROBLEMS;
     const prog = h('div', { class: 'progressbar' }, h('div', { style: { width: '0%' } }));
     const lab = h('span', { class: 'muted' });
     const upd = () => { const st = Store.get('icf-progress', {}); const n = all.filter(p => st[p.id] && st[p.id].solved).length; prog.firstChild.style.width = (n / all.length * 100) + '%'; lab.textContent = `${n} / ${all.length} solved`; };
-    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Exam-level practice'), h('h2', null, `${all.length} hard problems in the style of IIMU end-terms`),
-      h('p', { class: 'lede', html: 'Attempt first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
+    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Exam-level practice'), h('h2', null, `${all.length} hard problems that cover the whole session`),
+      h('p', { class: 'lede', html: 'Each problem chains several steps, the way end-term questions do. Attempt first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab),
-      h('div', { class: 'row', style: { marginTop: '10px' } }, ...Object.keys(topics).map(k => h('a', { class: 'chip', href: '#practice', onclick: e => { e.preventDefault(); $('#topic-' + k).scrollIntoView({ behavior: 'smooth' }); } }, k + ' · ' + topics[k].name)))));
-    Object.keys(topics).forEach(k => {
-      const sec = h('div', { id: 'topic-' + k, style: { scrollMarginTop: '120px' } });
-      sec.append(h('h2', { style: { marginTop: '28px' } }, `Topic ${k}: ${topics[k].name}`), h('p', { class: 'muted' }, topics[k].blurb));
-      all.filter(p => p.topic === k).forEach(p => problem(p, sec, upd));
-      el.append(sec);
-    });
+      h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Problem</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#practice" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));
+    $$('a[data-prob]', el).forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = $('#prob-' + a.dataset.prob); t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); }));
+    const sec = h('div', { style: { marginTop: '18px' } });
+    all.forEach(p => problem(p, sec, upd));
+    el.append(sec);
     upd();
   }
 

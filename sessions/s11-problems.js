@@ -30,7 +30,8 @@
       const w1 = Fin.wacc(d.E / V, ke, d.D / V, now.kd, d.t);
       const de2 = D2 / E2, bl2 = Fin.lever(bu, de2, d.t), ke2 = Fin.capm(d.rf, bl2, d.mrp);
       const w2 = Fin.wacc(E2 / V, ke2, D2 / V, nxt.kd, d.t);
-      return { kd1: now.kd, w1, kd2: nxt.kd, w2, now, nxt, bu, ke, de2, bl2, ke2, D2, E2, V };
+      const wConst = Fin.wacc(E2 / V, ke2, D2 / V, now.kd, d.t);
+      return { kd1: now.kd, w1, kd2: nxt.kd, w2, now, nxt, bu, ke, de2, bl2, ke2, D2, E2, V, wConst };
     },
     parts: [
       { key: 'kd1', label: '(a) Current pre-tax cost of debt', unit: '%' },
@@ -45,7 +46,7 @@
       { t: 'Today\'s WACC', html: `<div class="formula">WACC = ${F.n(d.E / r.V, 4)} × ${P(r.ke)} + ${F.n(d.D / r.V, 4)} × ${P(r.kd1)} × (1 − ${d.t}) = <b>${P(r.w1)}</b></div>` },
       { t: 'Re-rate the firm at ₹' + F.big(r.D2) + ' cr of debt', html: r.nxt.path.map(p => `Try ${p.rating}: K<sub>d</sub> = ${P(p.kd)} → interest ₹${F.big(r.D2 * p.kd, 1)} cr → coverage ${F.n(p.cov, 3)} → ${p.next}`).join('<br>') + `<br><b>New rating ${r.nxt.rating}, K<sub>d</sub> = ${P(r.kd2)}.</b> Each notch down raises interest, which lowers coverage again. That feedback is why heavily borrowed firms slide several notches at once.` },
       { t: 'Relever the beta', html: `β<sub>U</sub> = ${d.bl} ÷ [1 + ${F.n(d.D / d.E, 3)}(1 − ${d.t})] = ${N(r.bu)}.<br>New D/E = ${F.big(r.D2)}/${F.big(r.E2)} = ${F.n(r.de2, 4)} → β<sub>L</sub> = ${N(r.bu)} × [1 + ${F.n(r.de2, 4)} × ${1 - d.t}] = <b>${N(r.bl2)}</b><br>K<sub>e</sub> = ${P(d.rf)} + ${N(r.bl2)} × ${P(d.mrp)} = <b>${P(r.ke2)}</b>` },
-      { t: 'New WACC', html: `<div class="formula">WACC = ${F.n(r.E2 / r.V, 4)} × ${P(r.ke2)} + ${F.n(r.D2 / r.V, 4)} × ${P(r.kd2)} × ${1 - d.t} = <b>${P(r.w2)}</b></div>WACC ${r.w2 > r.w1 ? 'rises' : 'falls'} by only ${F.n(Math.abs(r.w2 - r.w1) * 10000, 0)} bp. The firm took ${F.n((r.D2 - d.D) / r.V * 100, 0)}% of its value in new debt, yet the extra tax shield is mostly eaten by a spread that rose from ${P(r.kd1 - d.rf)} to ${P(r.kd2 - d.rf)} on <i>all</i> the debt, and by a higher equity beta.` }],
+      { t: 'New WACC', html: `<div class="formula">WACC = ${F.n(r.E2 / r.V, 4)} × ${P(r.ke2)} + ${F.n(r.D2 / r.V, 4)} × ${P(r.kd2)} × ${1 - d.t} = <b>${P(r.w2)}</b></div>WACC ${r.w2 > r.w1 ? 'rises' : 'falls'} by only ${F.n(Math.abs(r.w2 - r.w1) * 10000, 0)} bp. The firm took ${F.n((r.D2 - d.D) / r.V * 100, 0)}% of its value in new debt, yet WACC barely moves. Counterfactual: had K<sub>d</sub> stayed at ${P(r.kd1)}, WACC would have fallen to ${P(r.wConst)}, even with the higher equity beta already included. The spread rising from ${P(r.kd1 - d.rf)} to ${P(r.kd2 - d.rf)} on <i>all</i> the debt eats most of the tax-shield gain.` }],
     takeaway: (d, r) => 'Cheap debt is not free. Each notch down the rating table raises the spread on every rupee already borrowed, so the benefit of extra debt shrinks quickly. Borrow a little more and WACC starts rising: open the <b>WACC Machine</b>, set the spread to follow the rating, and watch the U-shape appear.'
   });
 
@@ -63,14 +64,14 @@
     parts: [
       { key: 'y', label: '(a) Pre-tax cost of debt (YTM)', unit: '%' },
       { key: 'at', label: '(b) After-tax cost of debt', unit: '%' },
-      { key: 'dv', label: '(c) D/V using market values (as a decimal)', unit: 'x' },
+      { key: 'dv', label: '(c) D/V using market values', unit: '%' },
       { key: 'w', label: '(d) WACC', unit: '%' }],
     hints: ['A bond trading above par has a YTM below its coupon. Solve 102.4 = Σ 9/(1+y)<sup>t</sup> + 100/(1+y)<sup>6</sup> by trial and error (or RATE in Excel).',
       'Market value of debt = ₹4,000 cr × 102.4/100.'],
     steps: (d, r) => [
       { t: 'YTM is the market\'s required return on the debt', html: `<div class="formula">${d.price} = Σ<sub>t=1..${d.n}</sub> ${d.c}/(1+y)<sup>t</sup> + 100/(1+y)<sup>${d.n}</sup> ⟹ y = <b>${P(r.y, 3)}</b></div>The ${d.c}% coupon was set when the bond was issued. Lenders today would accept ${P(r.y, 2)}, so that is the cost of debt.` },
       { t: 'After-tax cost', html: `${P(r.y, 3)} × (1 − ${d.t}) = <b>${P(r.at, 3)}</b>` },
-      { t: 'Market-value weights', html: `D = ${F.big(d.Dface)} × ${d.price}/100 = ₹${F.big(r.Dm, 1)} cr; V = ${F.big(r.Dm, 1)} + ${F.big(d.E)} = ₹${F.big(r.V, 1)} cr; D/V = <b>${F.n(r.dv, 4)}</b>` },
+      { t: 'Market-value weights', html: `D = ${F.big(d.Dface)} × ${d.price}/100 = ₹${F.big(r.Dm, 1)} cr; V = ${F.big(r.Dm, 1)} + ${F.big(d.E)} = ₹${F.big(r.V, 1)} cr; D/V = <b>${P(r.dv)}</b>. Using face value would give 40.00%, which is wrong.` },
       { t: 'Cost of equity and WACC', html: `K<sub>e</sub> = ${P(d.rf)} + ${d.bl} × ${P(d.mrp)} = ${P(r.ke)}<div class="formula">WACC = ${F.n(1 - r.dv, 4)} × ${P(r.ke)} + ${F.n(r.dv, 4)} × ${P(r.at, 3)} = <b>${P(r.w)}</b></div>Had you used the coupon rate and face value, you would get ${P(r.wWrong)}, which is wrong.` }],
     takeaway: () => 'The cost of debt is what lenders demand <i>today</i> (the YTM), not the historical coupon. Weights use market values for debt as well as equity.'
   });
@@ -92,14 +93,14 @@
       { key: 'gm', label: '(a) Geometric HRP', unit: '%' },
       { key: 'am', label: '(b) Arithmetic HRP', unit: '%' },
       { key: 'keg', label: '(c) Cost of equity using the geometric HRP', unit: '%' },
-      { key: 'vgap', label: '(d) Value(geometric) − Value(arithmetic) of Gulab Foods', unit: 'cr' }],
+      { key: 'vgap', label: '(d) Value(geometric) − Value(arithmetic) of Gulab Foods (keep at least two decimals in % inputs)', unit: 'cr', tol: 0.02 }],
     hints: ['CAGR = [(1+r<sub>1</sub>)(1+r<sub>2</sub>)…(1+r<sub>5</sub>)]<sup>1/5</sup> − 1.', 'Value of a growing perpetuity = CF<sub>1</sub> / (K<sub>e</sub> − g).'],
     steps: (d, r) => [
       { t: 'Compound growth rates', html: `CAGR(Nifty) = [${d.rm.map(x => F.n(1 + x, 2)).join(' × ')}]<sup>1/5</sup> − 1 = ${P(r.cm, 3)}<br>CAGR(G-sec) = [${d.rfr.map(x => F.n(1 + x, 2)).join(' × ')}]<sup>1/5</sup> − 1 = ${P(r.cf, 3)}<br>Geometric HRP = <b>${P(r.gm, 3)}</b>` },
       { t: 'Arithmetic averages', html: `Mean(Nifty) = ${P(Fin.mean(d.rm), 2)}; Mean(G-sec) = ${P(Fin.mean(d.rfr), 2)}; Arithmetic HRP = <b>${P(r.am, 3)}</b>.<br>A volatile series always has an arithmetic mean above its CAGR. The gap is roughly half the variance.` },
       { t: 'Two costs of equity', html: `Geometric: ${P(d.rf)} + ${d.b} × ${P(r.gm, 3)} = <b>${P(r.keg, 3)}</b><br>Arithmetic: ${P(d.rf)} + ${d.b} × ${P(r.am, 3)} = ${P(r.kea, 3)}` },
-      { t: 'Valuation gap', html: `V<sub>geo</sub> = ${d.cf}/(${P(r.keg, 3)} − ${P(d.g, 0)}) = ${C(r.vg)}; V<sub>arith</sub> = ${d.cf}/(${P(r.kea, 3)} − ${P(d.g, 0)}) = ${C(r.va)}<br>Difference = <b>${C(r.vgap)}</b>. A few hundred basis points of premium moves value by about ${F.n(r.vgap / r.va * 100, 0)}%.` }],
-    takeaway: () => 'The 100%, −50% example from class: you end where you started, so the CAGR (0%) tells the truth and the arithmetic mean (25%) does not. Small changes in the premium move valuations a lot, because the premium is multiplied by β and sits in the denominator.'
+      { t: 'Valuation gap', html: `V<sub>geo</sub> = ${d.cf}/(${P(r.keg, 3)} − ${P(d.g, 0)}) = ${C(r.vg)}; V<sub>arith</sub> = ${d.cf}/(${P(r.kea, 3)} − ${P(d.g, 0)}) = ${C(r.va)}<br>Difference = <b>${C(r.vgap)}</b>. A premium gap of ${F.n((r.am - r.gm) * 10000, 0)} bp (${F.n((r.kea - r.keg) * 10000, 0)} bp in K<sub>e</sub>) moves value by about ${F.n(r.vgap / r.va * 100, 0)}%.` }],
+    takeaway: () => 'The 100%, −50% example from class: you end where you started, so the CAGR (0%) is what realised wealth did, while the arithmetic mean (25%) overstates long-run compound growth. (The arithmetic mean is the better estimate of a single year\'s expected return, which is why there is a debate; this course uses the CAGR.) Small changes in the premium move valuations a lot, because the premium is multiplied by β and sits in the denominator.'
   });
 
   problems.push({
@@ -124,7 +125,7 @@
       { t: 'Intercept', html: `R<sub>f</sub> = ${P(d.e1, 1)} − ${d.b1} × ${P(r.mrp)} = <b>${P(r.rf)}</b>` },
       { t: 'Strip out the old leverage', html: `β<sub>U</sub> = ${d.bz} ÷ [1 + ${d.deOld} × (1 − ${d.t})] = <b>${N(r.bu)}</b>` },
       { t: 'Put in today\'s leverage', html: `β<sub>L</sub> = ${N(r.bu)} × [1 + ${d.deNew} × ${1 - d.t}] = ${N(r.bl)}<br>K<sub>e</sub> = ${P(r.rf)} + ${N(r.bl)} × ${P(r.mrp)} = <b>${P(r.ke)}</b><br>Using the stale regression beta directly would give ${P(r.keStale)}, too low by ${F.n((r.ke - r.keStale) * 10000, 0)} bp.` }],
-    takeaway: () => 'Regression betas describe the past capital structure. When leverage has changed, unlever at the regression-period D/E and relever at the current or target D/E. That is exactly what we did for Marriott (unlever at 0.70, relever at 1.50).'
+    takeaway: () => 'Regression betas describe the past capital structure. When leverage has changed, unlever at the regression-period D/E and relever at the current or target D/E. For Marriott we unlevered at 0.70, the current market D/E, as a proxy for the regression window (at end-1986 it was about 0.43), and relevered at the 1.50 target.'
   });
 
   /* ======================= TOPIC B: Leverage, unlevering, cash ======================= */
@@ -163,7 +164,7 @@
     id: 's11-B2', code: 'B2', topic: 'B', marks: 5,
     title: 'Bottom-up beta with cash: an all-equity carmaker goes EV',
     data: { bComp: 1.20, deComp: 0.40, cashComp: 0.12, cashM: 0.06, deM: 0.25, t: 0.25, rf: 0.064, mrp: 0.072 },
-    story: d => `<p><b>Mewar Motors</b> is all-equity today and holds cash equal to ${P(d.cashM, 0)} of its firm value. To fund an EV platform it will move to a target <b>D/E of ${d.deM}</b>, keeping its cash. Its own regression beta is unreliable because the business is changing, so the CFO uses a bottom-up beta from EV comparables:</p>` +
+    story: d => `<p><b>Mewar Motors</b> is all-equity today and holds cash equal to ${P(d.cashM, 0)} of its firm value. To fund an EV platform it will move to a target <b>D/E of ${d.deM}</b>, keeping its cash. Assume cash remains ${P(d.cashM, 0)} of firm value after the change. Its own regression beta is unreliable because the business is changing, so the CFO uses a bottom-up beta from EV comparables:</p>` +
       tbl(['Comparables (average)', 'Value'], [['Regression (levered) beta', d.bComp], ['D/E', d.deComp], ['Cash ÷ firm value (D+E)', P(d.cashComp, 0)]]) +
       `<p>Tax = ${P(d.t, 0)}, R<sub>f</sub> = ${P(d.rf, 1)}, MRP = ${P(d.mrp, 1)}. Treat cash as a zero-beta asset: β<sub>U, firm</sub> = β<sub>business</sub> × (1 − cash/V).</p>`,
     solve(d) {
@@ -177,7 +178,7 @@
       { key: 'blM', label: '(b) Mewar\'s levered beta at target D/E', unit: 'x' },
       { key: 'ke', label: '(c) Mewar\'s cost of equity', unit: '%' },
       { key: 'keNoCash', label: '(d) Cost of equity if Mewar pays out all its cash as a special dividend (same D/E)', unit: '%' }],
-    hints: ['Order matters: first remove leverage (unlever), then remove cash (divide by 1 − cash/V). Going back, add Mewar\'s cash, then Mewar\'s leverage.'],
+    hints: ['Strip out both leverage (unlever) and cash (divide by 1 − cash/V). Both are multiplicative, so the order does not matter. Then add back Mewar\'s cash and Mewar\'s leverage.'],
     steps: (d, r) => [
       { t: 'Remove the comparables\' leverage', html: `β<sub>U</sub> (incl. cash) = ${d.bComp} ÷ [1 + ${d.deComp} × ${1 - d.t}] = ${N(r.buC)}` },
       { t: 'Remove the comparables\' cash', html: `Cash has a beta of 0, so it drags the measured beta down. β<sub>business</sub> = ${N(r.buC)} ÷ (1 − ${d.cashComp}) = <b>${N(r.bBiz)}</b>` },
@@ -204,7 +205,7 @@
     },
     parts: [
       { key: 'bu', label: '(a) Unlevered beta of the merged firm', unit: 'x' },
-      { key: 'bl', label: '(b) Equity beta of the merged firm', unit: 'x' },
+      { key: 'bl', label: '(b) Equity beta of the merged firm', unit: 'x', tol: 0.003 },
       { key: 'w', label: '(c) Firm-wide WACC of the merged firm', unit: '%' },
       { key: 'wB', label: '(d) Hurdle rate for a new data-centre project, financed at the group\'s D/V', unit: '%' }],
     hints: ['Unlevered betas average by <i>firm value</i> (D + E), not by equity.', 'For (d), use the data-centre business\'s β<sub>U</sub> relevered at the group\'s D/E. The project\'s risk does not change because it now sits inside a group with a cables business.'],
@@ -250,7 +251,7 @@
     steps: (d, r) => [
       { t: 'Firm unlevered beta', html: `D/E = ${F.big(d.D)}/${F.big(d.E)} = ${F.n(d.D / d.E, 3)}; β<sub>U</sub> = ${d.bl} ÷ (1 + ${F.n(d.D / d.E, 3)} × ${1 - d.t}) = <b>${N(r.bu)}</b>` },
       { t: 'Divisions with comparables', html: `Hotels: D/E = ${d.comp.H.dv}/${F.n(1 - d.comp.H.dv, 2)} = ${F.n(Fin.deFromDv(d.comp.H.dv), 4)}, β<sub>U</sub> = ${d.comp.H.b} ÷ (1 + ${F.n(Fin.deFromDv(d.comp.H.dv), 4)} × ${1 - d.t}) = ${N(r.buH)}<br>QSR: D/E = ${F.n(Fin.deFromDv(d.comp.Q.dv), 4)}, β<sub>U</sub> = ${N(r.buQ)}` },
-      { t: 'Back out Facility Services', html: `<div class="formula">${N(r.bu)} = ${d.w.H} × ${N(r.buH)} + ${d.w.Q} × ${N(r.buQ)} + ${d.w.F} × β<sub>U,FS</sub> ⟹ β<sub>U,FS</sub> = <b>${N(r.buF)}</b></div>Any error in the other two estimates lands, multiplied by 1/${d.w.F} = ${F.n(1 / d.w.F, 0)}×, on this division. Marriott's Contract Services beta had the same weakness.` },
+      { t: 'Back out Facility Services', html: `<div class="formula">${N(r.bu)} = ${d.w.H} × ${N(r.buH)} + ${d.w.Q} × ${N(r.buQ)} + ${d.w.F} × β<sub>U,FS</sub> ⟹ β<sub>U,FS</sub> = <b>${N(r.buF)}</b></div>Errors land on this division amplified: an error in Hotels\' β<sub>U</sub> is multiplied by ${d.w.H}/${d.w.F} = ${F.n(d.w.H / d.w.F, 1)}×, in QSR\'s by ${F.n(d.w.Q / d.w.F, 1)}×, and in the parent\'s own β<sub>U</sub> by 1/${d.w.F} = ${F.n(1 / d.w.F, 0)}×. Marriott's Contract Services beta had the same weakness.` },
       { t: 'Hotels hurdle', html: `Target D/E = ${F.n(r.H.de, 4)} → β<sub>L</sub> = ${N(r.H.blv)} → K<sub>e</sub> = ${P(r.H.ke)}; K<sub>d</sub> = ${P(r.H.kd)}<div class="formula">WACC = ${F.n(1 - d.tgt.H.dv, 2)} × ${P(r.H.ke)} + ${d.tgt.H.dv} × ${P(r.H.kd)} × ${1 - d.t} = <b>${P(r.wH)}</b></div>` },
       { t: 'Facility Services hurdle', html: `Target D/E = ${F.n(r.Fs.de, 4)} → β<sub>L</sub> = ${N(r.Fs.blv)} → K<sub>e</sub> = ${P(r.Fs.ke)}; K<sub>d</sub> = ${P(r.Fs.kd)}<div class="formula">WACC = ${F.n(1 - d.tgt.F.dv, 2)} × ${P(r.Fs.ke)} + ${d.tgt.F.dv} × ${P(r.Fs.kd)} × ${1 - d.t} = <b>${P(r.wF)}</b></div>For comparison, QSR's hurdle is ${P(r.Q.w)}.` }],
     takeaway: () => 'This is the Marriott recipe end to end: unlever the parent, unlever the comparables, back out the orphan division, then relever each division at <i>its own</i> target leverage and add <i>its own</i> spread.'
@@ -259,7 +260,7 @@
   problems.push({
     id: 's11-C2', code: 'C2', topic: 'C', marks: 6,
     title: 'One hurdle rate for everyone: count the damage',
-    data: { firm: 0.125, hF: 0.1475, hQ: 0.1125, X: { c0: -500, c: 127, n: 6 }, Y: { c0: -400, c: 97, n: 6 } },
+    data: { firm: 0.125, hF: 0.1473, hQ: 0.1157, X: { c0: -500, c: 127, n: 6 }, Y: { c0: -400, c: 97, n: 6 } },
     story: d => `<p>Aravalli Group (from C1) evaluates every project at its firm-wide WACC of <b>${P(d.firm)}</b>. Its divisional hurdle rates are <b>${P(d.hF)}</b> for Facility Services and <b>${P(d.hQ)}</b> for QSR. Two proposals reach the investment committee:</p>` +
       tbl(['Project (₹ cr)', 't = 0', 'Years 1–6 (each)'], [['X: hospital facility-management contract (Facility Services)', d.X.c0, '+' + d.X.c], ['Y: 40 new QSR outlets in tier-2 cities (QSR)', d.Y.c0, '+' + d.Y.c]]),
     solve(d) {
@@ -271,9 +272,9 @@
     },
     parts: [
       { key: 'irrX', label: '(a) IRR of project X', unit: '%' },
-      { key: 'nXd', label: '(b) NPV of X at its divisional hurdle', unit: 'cr' },
-      { key: 'nYd', label: '(c) NPV of Y at its divisional hurdle', unit: 'cr' },
-      { key: 'loss', label: '(d) Total value lost by using the firm-wide WACC rule (a positive number)', unit: 'cr' }],
+      { key: 'nXd', label: '(b) NPV of X at its divisional hurdle', unit: 'cr', abs: 0.3 },
+      { key: 'nYd', label: '(c) NPV of Y at its divisional hurdle', unit: 'cr', abs: 0.3 },
+      { key: 'loss', label: '(d) Total value lost by using the firm-wide WACC rule (a positive number)', unit: 'cr', abs: 0.4 }],
     hints: ['NPV = C<sub>0</sub> + C × annuity factor(n, r).', 'Under the firm-wide rule, which project is accepted and which rejected? Value lost = the negative NPV you accept plus the positive NPV you give up, both measured at the correct (divisional) rates.'],
     steps: (d, r) => [
       { t: 'IRRs', html: `X: 500 = 127 × AF(6, IRR) ⟹ IRR<sub>X</sub> = <b>${P(r.irrX)}</b>. Y: IRR<sub>Y</sub> = ${P(r.irrY)}.` },
@@ -307,7 +308,7 @@
       { t: 'Back out cement', html: `Hotels weight = ${F.big(d.Vh)}/${F.big(r.V)} = ${F.n(r.wH, 2)}<div class="formula">${N(r.bu)} = ${F.n(r.wH, 2)} × ${d.buH} + ${F.n(1 - r.wH, 2)} × β<sub>U,cement</sub> ⟹ β<sub>U,cement</sub> = <b>${N(r.buC)}</b></div>` },
       { t: 'Cement after the split', html: `V = ${F.big(r.Vc)}, D = ${F.big(r.Dc)}, E = ${F.big(r.Ec)} → D/E = ${F.n(r.Dc / r.Ec, 4)}<br>β<sub>L</sub> = ${N(r.buC)} × [1 + ${F.n(r.Dc / r.Ec, 4)} × ${1 - d.t}] = <b>${N(r.blC)}</b>` },
       { t: 'The new hotels company', html: `D = ${F.big(d.Dh)}, E = ${F.big(r.Eh)} → D/E = ${F.n(d.Dh / r.Eh, 4)}; β<sub>L</sub> = ${d.buH} × [1 + ${F.n(d.Dh / r.Eh, 4)} × ${1 - d.t}] = <b>${N(r.blH)}</b><br>Shareholders who held the conglomerate now hold a low-beta cement stock and a high-beta hotel stock. Together their risk is unchanged, but each company can now be valued at its own discount rate.` }],
-    takeaway: () => 'In January 2025 ITC demerged ITC Hotels in the same way. A demerger does not change total risk. It reveals the separate risks so that each business gets its own hurdle rate, as Marriott did in 1993.'
+    takeaway: () => 'In January 2025 ITC demerged ITC Hotels in a similar way (ITC itself kept about 40% of the new company, whereas this problem hands it all to shareholders). A demerger does not change total risk. It separates the risks so each business can be priced at its own hurdle rate.'
   });
 
   problems.push({

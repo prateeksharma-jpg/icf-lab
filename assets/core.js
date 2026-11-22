@@ -168,8 +168,9 @@
 
   // ---------- answer checking ----------
   function parseNum(v) { if (v == null) return NaN; const t = String(v).replace(/[,%₹\s]/g, ''); return t === '' ? NaN : Number(t); }
-  function isClose(user, ans, unit, tol) {
+  function isClose(user, ans, unit, tol, abs) {
     if (!isFinite(user)) return false;
+    if (abs != null) return Math.abs(user - ans) <= abs + 1e-12;
     if (unit === '%') { const u = user / 100; return Math.abs(u - ans) <= (tol ?? 0.001) + 1e-12; }
     const rel = tol ?? 0.01;
     return Math.abs(user - ans) <= Math.max(rel * Math.abs(ans), unit === 'x' ? 0.006 : 0.011);
@@ -224,7 +225,7 @@
       let ok = 0; const inputs = {};
       rows.forEach(({ pt, inp, row, mark }) => {
         const u = parseNum(inp.value); inputs[pt.key] = inp.value;
-        const good = isClose(u, r[pt.key], pt.unit, pt.tol);
+        const good = isClose(u, r[pt.key], pt.unit, pt.tol, pt.abs);
         row.classList.toggle('ok', good); row.classList.toggle('no', !good);
         mark.textContent = good ? '✓' : '✗'; if (good) ok++;
       });

@@ -63,15 +63,15 @@
     const m = MACRO[c.c], ov = (o.ov[c.id] || {});
     const val = k => ov[k] != null ? ov[k] : c[k];
     const E = val('mcap'), D = val('debt') + (o.lease ? val('lease') : 0), cash = val('cash'), V = D + E, de = D / E, t = m.tax;
-    const rf = (o.rfm === 'dam' && c.c === 'IN') ? m.rf - m.dsp : m.rf, erp = m.erp;
+    const rf = (o.rfm === 'dam' && c.c === 'IN') ? m.rf - m.dsp : m.rf, rfD = m.rf, erp = m.erp;
     const useBU = o.beta === 'bu' && c.ind;
     let bl, bu, note;
     if (useBU) { const cashV = Math.min(0.9, cash / V); bu = c.ind[1] * (1 - cashV); bl = Fin.lever(bu, de, t); note = `bottom-up: ${c.ind[0]} β<sub>U</sub> ${F.n(c.ind[1], 2)} × (1 − cash/V ${F.n(cashV, 3)}) = ${F.n(bu, 3)}, relevered at D/E ${F.n(de, 3)}`; }
     else { bl = val('beta'); bu = Fin.unlever(bl, de, t); note = 'regression beta vs local index (as reported)'; }
     const ke = Fin.capm(rf, bl, erp);
-    const intr = val('int'), cov = intr > 0 ? val('ebit') / intr : Infinity, rt = Fin.rate(cov, DAM), kd = rf + rt.spread;
+    const intr = val('int'), cov = intr > 0 ? val('ebit') / intr : Infinity, rt = Fin.rate(cov, DAM), kd = rfD + rt.spread;
     const w = Fin.wacc(E / V, ke, D / V, kd, t);
-    return { E, D, V, cash, de, dv: D / V, t, rf, erp, bl, bu, ke, cov, rt, kd, w, note, m, useBU };
+    return { E, D, V, cash, de, dv: D / V, t, rf, rfD, erp, bl, bu, ke, cov, rt, kd, w, note, m, useBU };
   }
 
   // ------- Real companies renderer -------
@@ -91,7 +91,7 @@
     host.append(h('div', { class: 'card' }, h('h3', null, 'All companies side by side'), h('div', { class: 'legend' }, h('span', null, h('i', { style: { background: 'var(--s1)', height: '10px' } }), 'E/V × Ke'), h('span', null, h('i', { class: 'hatch', style: { background: 'var(--s2)', height: '10px' } }), 'D/V × Kd(1 − t)')), cmp,
       h('p', { class: 'muted' }, 'Rupee and dollar WACCs are not directly comparable: Indian rates include higher expected inflation (and country risk), so compare within a currency.')));
     host.append(h('div', { class: 'card' }, h('h3', null, 'Where these numbers come from'),
-      h('p', { class: 'muted', html: `<b>Macro:</b> ${MACRO.IN.rfNote}; ${MACRO.US.rfNote}. ERP: ${MACRO.IN.erpNote}; ${MACRO.US.erpNote}. Tax: India 25.17% (new regime, s.115BAA), US 25% (federal + state).<br><b>Cost of debt:</b> R<sub>f</sub> + spread from Damodaran's synthetic rating table (large non-financial firms, Jan 2026), using EBIT ÷ interest from the latest full year. Indian finance cost includes lease interest (Ind AS 116); US interest excludes operating-lease interest.<br><b>Companies:</b> share prices are closes on 20 Nov 2026; balance sheets are at Mar 2026 (India) or Sep 2026 (US). Sources: screener.in, stockanalysis.com, company filings and rating-agency releases. Regression betas come from data aggregators with differing windows (Indian betas especially). Bottom-up betas are Damodaran's cash-corrected industry unlevered betas (Jan 2026).<br><b>These are teaching inputs, not investment advice.</b> Before using a number for anything real, check it against a primary source.` })));
+      h('p', { class: 'muted', html: `<b>Macro:</b> ${MACRO.IN.rfNote}; ${MACRO.US.rfNote}. ERP: ${MACRO.IN.erpNote}; ${MACRO.US.erpNote}. Tax: India 25.17% (new regime, s.115BAA), US 25% (federal + state).<br><b>Cost of debt:</b> R<sub>f</sub> + spread from Damodaran's synthetic rating table (large non-financial firms, Jan 2026), using EBIT ÷ interest from the latest full year. Indian finance cost includes lease interest (Ind AS 116) and other items such as interest on deposits, so for nearly debt-free firms (ITC Hotels, Maruti) the implied interest rate is not meaningful, though coverage is clearly very high. US interest excludes operating-lease interest. Reliance's coverage (≈5.55×) sits just above the A+/A cut-off of 5.5, so small input changes flip its rating.<br><b>Companies:</b> share prices are closes on 20 Nov 2026; balance sheets are at Mar 2026 (India) or Sep 2026 (US). Sources: screener.in, stockanalysis.com, company filings and rating-agency releases. Regression betas come from data aggregators with differing windows (Indian betas especially). Bottom-up betas are Damodaran's cash-corrected industry unlevered betas (Jan 2026).<br><b>These are teaching inputs, not investment advice.</b> Before using a number for anything real, check it against a primary source.` })));
 
     const ROWS = [['mcap', 'Market value of equity'], ['debt', 'Borrowings (ex-leases)'], ['lease', 'Lease liabilities'], ['cash', 'Cash & liquid investments'], ['beta', 'Regression beta'], ['ebit', 'EBIT (latest year)'], ['int', 'Interest / finance cost']];
     function redraw() {
@@ -112,7 +112,7 @@
         <div class="step"><h4>1. Weights (market values)</h4>E = ${F.big(r.E, m.big)}, D = ${F.big(r.D, m.big)}${o.lease ? ' (incl. leases)' : ' (excl. leases)'} → D/V = <b>${P(r.dv, 1)}</b>, D/E = ${F.n(r.de, 3)}${c.bookE != null && c.bookE < 0 ? `<br><span class="muted">Book equity is ${F.usd(c.bookE, 2)} bn, which is negative, so market values are the only usable weights.</span>` : ''}</div>
         <div class="step"><h4>2. Beta</h4>β<sub>L</sub> = <b>${F.n(r.bl, 3)}</b> <span class="muted">(${r.note})</span>${c.betaWarn && !r.useBU ? `<br><span class="pill hard">Caution</span> ${c.betaWarn}` : ''}${o.beta === 'bu' && !c.ind ? '<br><span class="pill">No single industry fits a conglomerate, so the regression beta is used.</span>' : ''}</div>
         <div class="step"><h4>3. Cost of equity</h4>K<sub>e</sub> = ${P(r.rf)} + ${F.n(r.bl, 3)} × ${P(r.erp)} = <b>${P(r.ke)}</b></div>
-        <div class="step"><h4>4. Cost of debt (synthetic rating)</h4>Coverage = EBIT ÷ interest = ${isFinite(r.cov) ? F.n(r.cov, 2) + '×' : '∞'} → <b>${r.rt.rating}</b>, spread ${P(r.rt.spread)} → K<sub>d</sub> = ${P(r.rf)} + ${P(r.rt.spread)} = <b>${P(r.kd)}</b><br><span class="muted">Actual rating: ${c.rating}${c.lossYear ? '. Note: a loss-making year, so the coverage ratio is distorted.' : ''}</span></div>
+        <div class="step"><h4>4. Cost of debt (synthetic rating)</h4>Coverage = EBIT ÷ interest = ${isFinite(r.cov) ? F.n(r.cov, 2) + '×' : '∞'} → <b>${r.rt.rating}</b>, spread ${P(r.rt.spread)} → K<sub>d</sub> = ${P(r.rfD)} + ${P(r.rt.spread)} = <b>${P(r.kd)}</b>${r.rfD !== r.rf ? ' <span class=\"muted\">(debt is priced off the actual G-sec yield, which already includes India’s default spread)</span>' : ''}<br><span class="muted">Actual rating: ${c.rating}${c.lossYear ? '. Note: a loss-making year, so the coverage ratio is distorted.' : ''}</span></div>
         <div class="step"><h4>5. WACC</h4><div class="formula">${F.n(1 - r.dv, 3)} × ${P(r.ke)} + ${F.n(r.dv, 3)} × ${P(r.kd)} × (1 − ${P(r.t)}) = <b>${P(r.w)}</b></div></div>` });
       detail.append(h('div', { class: 'card' },
         h('div', { class: 'row' }, h('h3', { style: { margin: 0 } }, c.n), h('span', { class: 'pill' }, c.c === 'IN' ? 'India · ₹' : 'USA · $'), h('span', { class: 'spacer' }), h('button', { class: 'btn small', onclick: () => { delete o.ov[c.id]; redraw(); } }, 'Reset inputs')),
@@ -158,6 +158,6 @@
         h('div', null,
           h('p', { html: '<b>What happened to the three divisions?</b>' }),
           h('ul', { class: 'muted', html: '<li><b>1993:</b> Marriott Corporation split in two. <b>Host Marriott</b> kept the hotel real estate and most of the debt (it later became Host Hotels & Resorts, a REIT). <b>Marriott International</b> took the management businesses.</li><li><b>1998:</b> the food-service management business (the old Contract Services) merged with Sodexho\'s North American operations to form <b>Sodexho Marriott Services</b>.</li><li><b>2016:</b> Marriott International bought Starwood and became the world\'s largest hotel company. It owns very few of the hotels it runs.</li>' }),
-          h('p', { class: 'muted', html: 'The split is the divisional-hurdle-rate argument carried out by the market: very different risks were separated so each could be priced on its own. Open <b>Real companies</b> to see Aramark, today\'s closest analog of Contract Services.' }))));
+          h('p', { class: 'muted', html: 'The split was driven mainly by the burden of real-estate debt (and was fought by bondholders), but it also separated businesses with very different risks, so each could be priced on its own. Open <b>Real companies</b> to see Aramark, today\'s closest analog of Contract Services.' }))));
   };
 })();

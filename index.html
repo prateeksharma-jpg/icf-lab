@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICF Learning Lab</title>
+<meta name="description" content="Interactive learning lab for Introduction to Corporate Finance, IIM Udaipur: cost of capital, hurdle rates, the Marriott case, real-company WACCs and exam-level practice.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Cpath d='M7 23l6-7 4 4 8-10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css?v=1">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-title">ICF Learning Lab</span>
+      <span class="brand-sub">Introduction to Corporate Finance · IIM Udaipur · 2026</span>
+      <div class="brand-right">
+        <button class="iconbtn" id="theme-btn" aria-label="Toggle light or dark theme">◐ Theme</button>
+      </div>
+    </div>
+    <nav class="sessions" id="sessions" aria-label="Sessions"></nav>
+    <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<div class="footer">Built for ICF Sessions 11–20. Case data: HBS 9-289-047, <i>Marriott Corporation: The Cost of Capital</i> (Abridged). Market data are approximate teaching inputs as of Nov 2026. Your progress is saved only in this browser.</div>
+
+<script src="assets/core.js?v=1"></script>
+<script src="sessions/s11-problems.js?v=1"></script>
+<script src="sessions/s11-marriott.js?v=1"></script>
+<script src="sessions/s11-data.js?v=1"></script>
+<script src="sessions/s11.js?v=1"></script>
+<script>
+(function () {
+  var SESSIONS = [
+    { n: 11, t: 'Cost of capital & Marriott', ready: true },
+    { n: 12 }, { n: 13 }, { n: 14 }, { n: 15 }, { n: 16 }, { n: 17 }, { n: 18 }, { n: 19 }, { n: 20 }];
+  var nav = document.getElementById('sessions');
+  SESSIONS.forEach(function (s) {
+    var b = document.createElement('button');
+    b.className = 'chip' + (s.ready ? ' active' : '');
+    b.textContent = 'S' + s.n + (s.t ? ' · ' + s.t : ' · soon');
+    if (!s.ready) { b.disabled = true; b.title = 'Coming soon'; }
+    nav.appendChild(b);
+  });
+  // theme toggle: explicit choice is remembered per viewer
+  var root = document.documentElement, btn = document.getElementById('theme-btn');
+  try { var saved = localStorage.getItem('icf-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') ? root.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('icf-theme', next); } catch (e) {}
+  });
+  S11.mount(document.getElementById('main'), document.getElementById('tabs'));
+})();
+</script>
+</body>
+</html>

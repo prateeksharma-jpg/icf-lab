@@ -17,45 +17,42 @@
 
   // c: country; mcap/debt/lease/cash in ccy units; beta = regression beta vs local index; ind = [industry, Damodaran cash-corrected unlevered beta]
   const CO = [
-    { id: 'mar', n: 'Marriott International', c: 'US', grp: 'The Marriott family today', mcap: 104.7, debt: 16.74, lease: 1.05, cash: 0.45, beta: 1.14, ebit: 4.141, int: 0.809, rating: 'S&P BBB / Moody\'s Baa2', ind: ['Hotel/Gaming (US)', 0.88], bookE: -5.08,
-      what: 'The hotel-management descendant of the 1988 case. It franchises and manages hotels it mostly does not own.',
-      insight: 'Book equity is <b>−$5.1 bn</b> after years of buybacks, so book-value weights would be meaningless; only market weights work. Compare today\'s hurdle with Cohrs\'s 1988 Lodging rate of 9.31%.' },
-    { id: 'hlt', n: 'Hilton Worldwide', c: 'US', grp: 'The Marriott family today', mcap: 79.3, debt: 13.02, lease: 0.95, cash: 0.77, beta: 1.07, ebit: 2.693, int: 0.620, rating: 'BB+ / Ba1 (unverified)', ind: ['Hotel/Gaming (US)', 0.88], bookE: -6.56,
-      what: 'Asset-light franchisor and manager. Hilton Hotels was one of Marriott\'s lodging comparables in 1988.',
-      insight: 'Its synthetic rating from coverage (≈4.3× → A) is several notches above its actual sub-investment-grade rating. Agencies weigh total leverage, not just one coverage ratio.' },
-    { id: 'mcd', n: 'McDonald\'s', c: 'US', grp: 'The Marriott family today', mcap: 192.9, debt: 39.83, lease: 14.72, cash: 1.19, beta: 0.43, ebit: 12.393, int: 1.582, rating: 'BBB+ / Baa1', ind: ['Restaurant/Dining (US)', 0.78], bookE: -0.34,
-      what: 'Global franchisor and landlord to its franchisees. It was a restaurant comparable in the case (β 1.00 in 1987).',
-      insight: 'A regression beta of <b>0.43</b> versus 1.00 in 1987: today\'s McDonald\'s behaves like a defensive real-estate-and-royalty business. Leases add about $15 bn of debt-like claims.' },
-    { id: 'armk', n: 'Aramark', c: 'US', grp: 'The Marriott family today', mcap: 14.2, debt: 5.23, lease: 0.31, cash: 0.69, beta: 1.17, ebit: 0.917, int: 0.321, rating: 'S&P BB+ / Moody\'s Ba2', ind: ['Business & Consumer Services (US)', 0.81], bookE: 3.49,
-      what: 'Food and facilities services for hospitals, universities and stadiums. It is the closest listed analog of Marriott\'s 1988 Contract Services division.',
-      insight: 'In 1988 Cohrs had no comparable for Contract Services and had to back out β<sub>U</sub> ≈ 1.05. Unlever Aramark\'s beta here and compare.' },
-    { id: 'ihcl', n: 'Indian Hotels (IHCL)', c: 'IN', grp: 'Indian hospitality & food', mcap: 129817, debt: 51, lease: 2745, cash: 4345, beta: 1.27, ebit: 3147, int: 221, rating: 'ICRA AAA', ind: ['Hotel/Gaming (India)', 0.76],
-      what: 'Tata group hotels (Taj, Vivanta, Ginger), plus TajSATS air catering, which is itself a Contract-Services-style business.',
-      insight: 'Almost all of its "debt" is lease liabilities. The regression beta (~1.27) is far above the Indian hotel industry\'s bottom-up 0.76 relevered. Switch the beta source and see how much the hurdle rate moves.' },
-    { id: 'itch', n: 'ITC Hotels', c: 'IN', grp: 'Indian hospitality & food', mcap: 38385, debt: 0, lease: 74, cash: 2432, beta: 1.25, ebit: 1178, int: 55, rating: 'CRISIL AAA', ind: ['Hotel/Gaming (India)', 0.76], betaWarn: 'Listed Jan 2025: fewer than two years of return data.',
-      what: 'Luxury hotels demerged from ITC Ltd with effect from 1 January 2025. ITC kept a stake of about 40%.',
-      insight: 'A real version of practice problem C3. With under two years of trading history its regression beta is noisy, which is exactly when a bottom-up beta is the better estimate. It has no borrowings, so WACC is close to its cost of equity.' },
-    { id: 'jub', n: 'Jubilant FoodWorks', c: 'IN', grp: 'Indian hospitality & food', mcap: 28024, debt: 1745, lease: 3157, cash: 335, beta: 1.38, ebit: 1035, int: 436, rating: 'CRISIL A1+ (commercial paper)', ind: ['Restaurant/Dining (India)', 0.57],
-      what: 'Domino\'s and Popeyes franchisee in India, with Domino\'s Turkey (about 26% of revenue).',
-      insight: 'Leases are about two-thirds of its debt. Coverage of about 2.4× maps to a BB+ synthetic rating, yet its commercial paper is A1+. A useful prompt for "when does the synthetic rating fail?"' },
-    { id: 'itc', n: 'ITC Ltd (post-demerger)', c: 'IN', grp: 'Indian conglomerates', mcap: 374830, debt: 0, lease: 400, cash: 21523, beta: 0.66, ebit: 28118, int: 85, rating: 'CRISIL AAA', ind: null, leaseEst: true,
-      what: 'Cigarettes, FMCG foods and personal care, agri-business, and paperboard. Cigarettes earn most of the profit.',
-      insight: 'A Marriott-style conglomerate: one firm-wide rate for cigarettes (stable cash cow) and new FMCG brands (riskier) would repeat Cohrs\'s problem. No single industry beta fits, so the bottom-up option is disabled here.' },
-    { id: 'ril', n: 'Reliance Industries', c: 'IN', grp: 'Indian conglomerates', mcap: 1864107, debt: 374421, lease: 23579, cash: 249704, beta: 1.00, ebit: 150223, int: 27061, rating: 'S&P A− / Moody\'s Baa1', ind: ['Oil/Gas Integrated (India; n = 1, Reliance itself)', 0.60],
-      what: 'Oil-to-chemicals, Jio (telecom), Retail, and upstream oil and gas, with very different risk in each.',
-      insight: 'The biggest Marriott problem in India. A refinery, a telecom network and a grocery chain should not share one hurdle rate. Deferred spectrum dues (~₹1 lakh cr) are debt-like but not included here. Try adding them to the debt.' },
-    { id: 'bha', n: 'Bharti Airtel', c: 'IN', grp: 'Indian conglomerates', mcap: 1316400, debt: 121670, lease: 73740, cash: 30720, beta: 0.67, ebit: 66728, int: 21555, rating: 'S&P BBB+ / CRISIL AAA', ind: ['Telecom Services (India)', 0.65],
-      what: 'Mobile, broadband and enterprise telecom in India and Africa.',
-      insight: 'A low-beta, utility-like business carrying heavy debt (including spectrum dues) and large tower leases. Coverage of about 3.1× gives an A− synthetic rating.' },
-    { id: 'mar-i', n: 'Maruti Suzuki', c: 'IN', grp: 'Indian bellwethers', mcap: 440509, debt: 70, lease: 103, cash: 78758, beta: 1.11, ebit: 19357, int: 239, rating: 'CRISIL AAA', ind: ['Auto & Truck (India)', 1.11],
-      what: 'India\'s largest car maker, about 58% owned by Suzuki. It is net-cash, including about ₹61,000 cr in long-term debt mutual funds.',
-      insight: 'Cash is about 18% of firm value. In bottom-up mode the business beta is scaled down by (1 − cash/V): the 2025 mid-term Maruti question with real numbers.' },
-    { id: 'tcs', n: 'TCS', c: 'IN', grp: 'Indian bellwethers', mcap: 859730, debt: 0, lease: 11283, cash: 41080, beta: 0.74, ebit: 66714, int: 1227, rating: 'Moody\'s A2', ind: ['Computer Services (India)', 0.74],
-      what: 'India\'s largest IT services firm. It has no borrowings, only office leases.',
-      insight: 'With almost no debt, WACC ≈ cost of equity. Its "interest" is lease interest, so coverage is a huge ~54×.' },
-    { id: 'indigo', n: 'IndiGo (InterGlobe)', c: 'IN', grp: 'Indian bellwethers', mcap: 216054, debt: 1806, lease: 75943, cash: 51651, beta: 1.73, ebit: 3984, int: 5944, rating: 'CRISIL AA− / ICRA AA (watch)', ind: ['Air Transport (India)', 0.83], debtEst: true, lossYear: true,
-      what: 'India\'s largest airline, with about 440 aircraft, almost all leased. It made a loss in FY26.',
-      insight: 'Turn leases off and IndiGo looks debt-free. Turn them on and debt is about a quarter of firm value. Coverage of 0.67× maps to a CC synthetic rating (12.6% spread) against an actual AA−. Synthetic ratings break down for lease-heavy firms in a loss year.' }
+    { id: 'mar', n: 'Marriott International', c: 'US', grp: 'The Marriott family today', mcap: 104.7, debt: 16.74, lease: 1.05, cash: 0.45, beta: 1.14, ebit: 4.141, int: 0.809, ind: ['Hotel/Gaming (US)', 0.88], bookE: -5.08,
+      what: 'Today\'s Marriott hotel company. It runs and franchises hotels but owns very few of them.',
+      insight: 'Its book equity is negative (−$5.1 bn) because it has bought back so many shares. Book values cannot be used as weights here; market values must be used, exactly as the session teaches.' },
+    { id: 'hlt', n: 'Hilton Worldwide', c: 'US', grp: 'The Marriott family today', mcap: 79.3, debt: 13.02, lease: 0.95, cash: 0.77, beta: 1.07, ebit: 2.693, int: 0.620, ind: ['Hotel/Gaming (US)', 0.88], bookE: -6.56,
+      what: 'A hotel company like Marriott. Hilton Hotels was one of the lodging comparables in the 1988 case.',
+      insight: 'Its beta (1.07) is close to Marriott\'s (1.14): two firms in the same business carry similar systematic risk, which is why comparables work.' },
+    { id: 'mcd', n: 'McDonald\'s', c: 'US', grp: 'The Marriott family today', mcap: 192.9, debt: 39.83, lease: 14.72, cash: 1.19, beta: 0.43, ebit: 12.393, int: 1.582, ind: ['Restaurant/Dining (US)', 0.78], bookE: -0.34,
+      what: 'Most of its restaurants are run by franchisees, who pay McDonald\'s rent and royalties. It was a restaurant comparable in the case (beta 1.00 in 1987).',
+      insight: 'Its beta is low (0.43): rent and royalties from thousands of franchisees are steady even when the economy slows, so the business carries little systematic risk.' },
+    { id: 'armk', n: 'Aramark', c: 'US', grp: 'The Marriott family today', mcap: 14.2, debt: 5.23, lease: 0.31, cash: 0.69, beta: 1.17, ebit: 0.917, int: 0.321, ind: ['Business & Consumer Services (US)', 0.81], bookE: 3.49,
+      what: 'Runs food and facility services for hospitals, universities and stadiums: the same business as Marriott\'s 1988 Contract Services division.',
+      insight: 'In 1988 there was no listed comparable for Contract Services, so its beta had to be backed out (1.05). Aramark is the kind of comparable Cohrs did not have.' },
+    { id: 'ihcl', n: 'Indian Hotels (IHCL)', c: 'IN', grp: 'Indian hospitality & food', mcap: 129817, debt: 51, lease: 2745, cash: 4345, beta: 1.27, ebit: 3147, int: 221, ind: ['Hotel/Gaming (India)', 0.76],
+      what: 'Tata group hotels: Taj, Vivanta and Ginger.',
+      insight: 'Its own regression beta (1.27) is much higher than the bottom-up beta built from the Indian hotel industry. Switch the beta source above to see how much this one input moves the WACC.' },
+    { id: 'itch', n: 'ITC Hotels', c: 'IN', grp: 'Indian hospitality & food', mcap: 38385, debt: 0, lease: 74, cash: 2432, beta: 1.25, ebit: 1178, int: 55, ind: ['Hotel/Gaming (India)', 0.76], betaWarn: 'Listed only since January 2025, so its regression beta rests on little more than a year of data.',
+      what: 'Luxury hotels separated from ITC Ltd in January 2025 and listed as their own company.',
+      insight: 'It has almost no debt, so its WACC is close to its cost of equity. With so little trading history, the bottom-up (industry) beta is the more reliable estimate.' },
+    { id: 'jub', n: 'Jubilant FoodWorks', c: 'IN', grp: 'Indian hospitality & food', mcap: 28024, debt: 1745, lease: 3157, cash: 335, beta: 1.38, ebit: 1035, int: 436, ind: ['Restaurant/Dining (India)', 0.57],
+      what: 'Runs Domino\'s and Popeyes restaurants in India.',
+      insight: 'Its interest coverage is low (EBIT is only about 2.4 times its interest bill), so its synthetic rating is lower and its cost of debt higher than the other Indian companies here.' },
+    { id: 'itc', n: 'ITC Ltd', c: 'IN', grp: 'Indian conglomerates', mcap: 374830, debt: 0, lease: 400, cash: 21523, beta: 0.66, ebit: 28118, int: 85, ind: null, leaseEst: true,
+      what: 'Cigarettes, packaged foods and personal care, agri-business and paperboard.',
+      insight: 'Like Marriott, ITC has several businesses with different risk. One WACC for all of them would set the wrong hurdle for each, so a single industry beta cannot be used (the bottom-up option is not available here).' },
+    { id: 'ril', n: 'Reliance Industries', c: 'IN', grp: 'Indian conglomerates', mcap: 1864107, debt: 374421, lease: 23579, cash: 249704, beta: 1.00, ebit: 150223, int: 27061, ind: ['Oil/Gas Integrated (India)', 0.60],
+      what: 'Oil refining and petrochemicals, Jio (telecom), Retail, and oil and gas production.',
+      insight: 'A refinery, a telecom network and a chain of shops carry very different risk. As in the Marriott case, each business should have its own hurdle rate; the firm-wide WACC shown here is only the average.' },
+    { id: 'bha', n: 'Bharti Airtel', c: 'IN', grp: 'Indian conglomerates', mcap: 1316400, debt: 121670, lease: 73740, cash: 30720, beta: 0.67, ebit: 66728, int: 21555, ind: ['Telecom Services (India)', 0.65],
+      what: 'Mobile, broadband and business telecom in India and Africa.',
+      insight: 'People keep paying their phone bills in good times and bad, so the beta is low (0.67). Its debt is large in rupees (about ₹1.95 lakh crore including leases) but only about 13% of firm value, because its shares are worth far more. So its WACC is still mostly its cost of equity.' },
+    { id: 'mar-i', n: 'Maruti Suzuki', c: 'IN', grp: 'Indian bellwethers', mcap: 440509, debt: 70, lease: 103, cash: 78758, beta: 1.11, ebit: 19357, int: 239, ind: ['Auto & Truck (India)', 1.11],
+      what: 'India\'s largest car maker. It holds a large pile of cash and investments and has almost no borrowings.',
+      insight: 'Cash is about 18% of its firm value. Cash has a beta of about zero, so in bottom-up mode the car business beta is scaled down by (1 − cash/V), as in the 2025 mid-term Maruti question.' },
+    { id: 'tcs', n: 'TCS', c: 'IN', grp: 'Indian bellwethers', mcap: 859730, debt: 0, lease: 11283, cash: 41080, beta: 0.74, ebit: 66714, int: 1227, ind: ['Computer Services (India)', 0.74],
+      what: 'India\'s largest IT services company. It has no borrowings.',
+      insight: 'With almost no debt, debt is a tiny share of its capital, so its WACC is almost exactly its cost of equity.' }
   ];
   window.S11_COMPANIES = CO;
 
@@ -101,17 +98,13 @@
   function coSources(c) {
     const tk = TICK[c.id];
     const mkt = c.c === 'IN'
-      ? A(`https://www.screener.in/company/${tk}/consolidated/`, `screener.in: ${tk} (consolidated)`)
-      : A(`https://stockanalysis.com/stocks/${tk.toLowerCase()}/statistics/`, `stockanalysis.com: ${tk} statistics`) + ' · ' + A(`https://stockanalysis.com/stocks/${tk.toLowerCase()}/financials/balance-sheet/?p=quarterly`, 'balance sheet');
-    const bs = c.c === 'IN' ? 'consolidated, 31 Mar 2026 (FY26)' : (c.id === 'armk' ? 'fiscal year-end, 2 Oct 2026 (FY26)' : '30 Sep 2026 (Q3 10-Q)');
-    const pl = c.c === 'IN' ? 'FY26 (year to Mar 2026); EBIT = profit before tax + finance cost' : (c.id === 'armk' ? 'FY26' : 'FY25 (calendar 2025)');
-    const est = [c.leaseEst ? 'lease liabilities' : '', c.debtEst ? 'borrowings' : ''].filter(Boolean);
-    return `<details class="srcbox"><summary>Sources and data notes for ${c.n}</summary><ul class="muted">
-      <li><b>Market data and financials:</b> ${mkt}. Share price: close on 20 Nov 2026. Balance sheet: ${bs}. EBIT and interest: ${pl}.</li>
-      <li><b>Regression beta:</b> ${F.n(c.beta, 2)}, ${BETASRC[c.id]}. Aggregator betas differ by window and index; recompute (2-year weekly or 5-year monthly) before relying on them.</li>
-      <li><b>Bottom-up beta:</b> ${c.ind ? `${c.ind[0]}, cash-corrected unlevered beta ${F.n(c.ind[1], 2)}, from ${A(c.c === 'IN' ? SRC.damBetasIN : SRC.damBetasUS, c.c === 'IN' ? "Damodaran's India industry betas (Jan 2026, .xls)" : "Damodaran's US industry betas (Jan 2026)")}.` : 'not available: no single industry fits this conglomerate.'}</li>
-      <li><b>Actual credit rating:</b> ${c.rating}. Shown only for comparison; the cost of debt uses the synthetic rating.</li>
-      ${est.length ? `<li><b>Estimates:</b> ${est.join(' and ')} could not be confirmed from filings; treat them as approximate.</li>` : ''}
+      ? A(`https://www.screener.in/company/${tk}/consolidated/`, `screener.in: ${tk}`)
+      : A(`https://stockanalysis.com/stocks/${tk.toLowerCase()}/statistics/`, `stockanalysis.com: ${tk}`);
+    const bs = c.c === 'IN' ? '31 Mar 2026' : (c.id === 'armk' ? '2 Oct 2026' : '30 Sep 2026');
+    return `<details class="srcbox"><summary>Sources for ${c.n}</summary><ul class="muted">
+      <li><b>Share price, debt, cash, EBIT and interest:</b> ${mkt}. Share price at the close on 20 Nov 2026; balance sheet at ${bs}; EBIT and interest from the latest full year.${c.leaseEst ? ' The lease figure is approximate.' : ''}</li>
+      <li><b>Regression beta:</b> ${F.n(c.beta, 2)}, ${BETASRC[c.id]}.</li>
+      <li><b>Industry beta (bottom-up):</b> ${c.ind ? `${c.ind[0]}, ${F.n(c.ind[1], 2)}, from ${A(c.c === 'IN' ? SRC.damBetasIN : SRC.damBetasUS, c.c === 'IN' ? "Damodaran's India industry betas" : "Damodaran's US industry betas")} (January 2026).` : 'not available, because ITC runs several different businesses.'}</li>
     </ul></details>`;
   }
   const ratingTable = () => '<div class="tblwrap"><table class="tbl"><tr><th>Interest coverage ≥</th><th>Rating</th><th>Default spread</th></tr>' +
@@ -121,76 +114,41 @@
   function notesCard() {
     return h('div', { class: 'card notes' },
       h('h3', null, 'How every number is built, and where it comes from'),
-      h('p', { class: 'muted' }, 'All market data are as of 20–22 November 2026. Every input can be overwritten in the company panel above. Links open the original source in a new tab.'),
+      h('p', { class: 'muted' }, 'All market data are as of 20–22 November 2026. Links open the original source in a new tab.'),
       h('div', { html: `
       <h4>1. Risk-free rate (R<sub>f</sub>)</h4>
-      <ul>
-        <li><b>India:</b> 10-year G-sec yield ≈ <b>${P(MACRO.IN.rf)}</b> (17 Nov 2026), ${A(SRC.teIN, 'Trading Economics: India 10-year yield')}. Cross-check with CCIL or RBI.</li>
-        <li><b>US:</b> 10-year Treasury yield ≈ <b>${P(MACRO.US.rf)}</b> (19 Nov 2026), ${A(SRC.teUS, 'Trading Economics: US 10-year yield')}.</li>
-        <li><b>Class convention:</b> R<sub>f</sub> = long-term government bond yield, as in the Marriott case (8.95%, 30-year).</li>
-        <li><b>Alternative (toggle "G-sec − default spread"):</b> Damodaran argues the Indian G-sec yield contains India's own default risk (default spread ${P(MACRO.IN.dsp)}, Jul 2026), so he uses ${P(MACRO.IN.rf)} − ${P(MACRO.IN.dsp)} = ${P(MACRO.IN.rf - MACRO.IN.dsp)} as the riskless rupee rate in the cost of equity. The cost of debt still uses the actual G-sec yield, because Indian companies borrow at spreads over it.</li>
-      </ul>
-      <h4>2. Equity risk premium (ERP)</h4>
-      <ul>
-        <li><b>India:</b> <b>${P(MACRO.IN.erp)}</b> = mature-market premium 4.20% + India country risk premium 2.72%, from ${A(SRC.damCtry, "Damodaran's country risk premiums")} (July 2026 update, ${A(SRC.damCtryXls, 'spreadsheet')}). The January 2026 figures were 7.08% = 4.23% + 2.85%.</li>
-        <li><b>US:</b> <b>${P(MACRO.US.erp)}</b>, Damodaran's implied (forward-looking) ERP on 1 Nov 2026, from ${A(SRC.damHome, "Damodaran's home page")}; method and history at ${A(SRC.damImpl, 'implied ERP data')}. It was 4.23% at the start of 2026.</li>
-        <li><b>How this differs from class:</b> for Marriott we used a <i>historical</i> premium, CAGR(R<sub>m</sub>) − CAGR(R<sub>f</sub>) = 5.63%. For live companies we use Damodaran's <i>implied</i> premium, which is backed out of today's index prices and expected cash flows. Both are legitimate; discuss which is more defensible for a hurdle rate today.</li>
-      </ul>
+      <p>The yield on the 10-year government bond: India ${P(MACRO.IN.rf)} (17 Nov 2026, ${A(SRC.teIN, 'Trading Economics: India 10-year')}); US ${P(MACRO.US.rf)} (19 Nov 2026, ${A(SRC.teUS, 'Trading Economics: US 10-year')}).</p>
+      <h4>2. Market risk premium (R<sub>m</sub> − R<sub>f</sub>)</h4>
+      <p>India ${P(MACRO.IN.erp)} and US ${P(MACRO.US.erp)}, the estimates published by Professor Aswath Damodaran of NYU (${A(SRC.damCtry, 'risk premiums by country')}; ${A(SRC.damHome, 'his home page')}). These are his published estimates for each market, used here as ready-made inputs. The course method, CAGR(R<sub>m</sub>) − CAGR(R<sub>f</sub>), needs decades of return data; Marriott's 5.63% is an example of it.</p>
       <h4>3. Beta</h4>
-      <ul>
-        <li><b>Regression (default):</b> the company's own levered beta against its local index (Nifty for India, S&P 500 for the US), as reported by data aggregators. It is used as is, on the assumption that it reflects today's leverage. Windows and providers differ, so these are the least reliable inputs (see each company's source notes).</li>
-        <li><b>Bottom-up (toggle):</b> three steps.
-          <ol>
-            <li>Start from Damodaran's industry unlevered beta corrected for cash, β<sub>business</sub> (${A(SRC.damBetasIN, 'India, Jan 2026 .xls')}; ${A(SRC.damBetasUS, 'US, Jan 2026')}).</li>
-            <li>Add back the company's own cash: β<sub>U</sub> = β<sub>business</sub> × (1 − cash ÷ (D + E)).</li>
-            <li>Relever at the company's own market D/E: β<sub>L</sub> = β<sub>U</sub>[1 + (D/E)(1 − t)].</li>
-          </ol>
-          Industry betas used: ${BU_LIST()}. Some Damodaran samples are tiny (India Oil/Gas has one firm, Reliance itself).</li>
-      </ul>
+      <ul><li><b>Regression beta (default):</b> the company's own beta against its market index (Nifty 50 or S&P 500), as reported by financial data websites. It already reflects the company's current debt, so it goes straight into CAPM.</li>
+      <li><b>Bottom-up beta (switch):</b> (1) start from the average unlevered beta of the company's industry, published by ${A(SRC.damBetasIN, 'Damodaran for India')} and ${A(SRC.damBetasUS, 'for the US')}; (2) multiply by (1 − cash/V) for the company's own cash; (3) relever at the company's own D/E: β<sub>L</sub> = β<sub>U</sub>[1 + (D/E)(1 − t)].</li></ul>
       <h4>4. Cost of debt (K<sub>d</sub>)</h4>
-      <ul>
-        <li><b>K<sub>d</sub> = R<sub>f</sub> + default spread</b>, where the spread comes from a <b>synthetic rating</b> based on interest coverage = EBIT ÷ interest expense for the latest full year, using ${A(SRC.damRatings, "Damodaran's ratings, interest coverage and default spreads")} (large non-financial firms, January 2026). This is method 3 on the class slides.</li>
-        <li>Actual agency ratings are shown for comparison. They often differ, because agencies also weigh total leverage, business risk and group support.</li>
-        <li><b>Caveats:</b> Indian finance cost includes lease interest (Ind AS 116) and items such as interest on deposits, so for nearly debt-free firms (ITC Hotels, Maruti) the implied rate is not meaningful, though coverage is clearly high. US interest expense excludes operating-lease interest. IndiGo made a loss in FY26, so its coverage (0.67×) maps to CC even though it is rated AA−. Reliance's coverage (≈5.55×) is just above the A+/A cut-off of 5.5, so small input changes flip its rating.</li>
-      </ul>
-      <details><summary>Damodaran's synthetic rating table (Jan 2026, large non-financial firms)</summary>${ratingTable()}</details>
-      <h4>5. Debt, leases and cash</h4>
-      <ul>
-        <li><b>Debt</b> = borrowings excluding lease liabilities, at book value (a proxy for market value), plus lease liabilities when the "Count as debt" toggle is on (default, as Damodaran does).</li>
-        <li><b>Debt-like items not included:</b> Reliance's deferred spectrum payments (≈ ₹99,552 cr). Bharti's borrowings figure appears to include spectrum dues. Edit the inputs to test either choice.</li>
-        <li><b>Cash</b> (including liquid investments) enters only the bottom-up beta. WACC weights use gross debt. Maruti's cash includes about ₹61,433 cr of long-term debt mutual funds.</li>
-      </ul>
+      <p>K<sub>d</sub> = R<sub>f</sub> + default spread. The spread comes from a <b>synthetic rating</b>: interest coverage = EBIT ÷ interest expense, looked up in ${A(SRC.damRatings, "Damodaran's rating table")} (January 2026), shown below. This is the third method on the class slides.</p>
+      <details><summary>Damodaran's synthetic rating table (January 2026)</summary>${ratingTable()}</details>
+      <h4>5. Weights</h4>
+      <p>E = market value of equity (share price × shares). D = borrowings plus lease liabilities, as reported on the balance sheet (book value, used as a proxy for market value). V = D + E.</p>
       <h4>6. Tax rate</h4>
-      <ul>
-        <li><b>India:</b> 25.17% marginal rate under the new regime (section 115BAA: 22% + 10% surcharge + 4% cess), ${A(SRC.itax, 'Income Tax Department')}.</li>
-        <li><b>US:</b> 25% (21% federal + state), as in Damodaran's country tax-rate table.</li>
-        <li>The marginal rate is used, not the effective rate, because the tax shield on the <i>next</i> rupee of interest is what matters (the same choice as 34% vs 44% in the Marriott case).</li>
-      </ul>
+      <p>India 25.17% (the corporate tax rate under the new regime, ${A(SRC.itax, 'Income Tax Department')}); US 25% (federal plus state).</p>
       <h4>7. Company data</h4>
-      <ul>
-        <li>Indian companies: ${A(SRC.screener, 'screener.in')} consolidated pages and company filings. US companies: ${A(SRC.sa, 'stockanalysis.com')} and SEC filings. Ratings: CRISIL, ICRA, S&P and Moody's releases.</li>
-        <li>Share prices are closes on 20 Nov 2026. Balance sheets are at 31 Mar 2026 for India and 30 Sep 2026 for the US (Aramark: 2 Oct 2026). The per-company source links are in each company panel.</li>
-        <li>All of Damodaran's datasets: ${A(SRC.damData, 'Damodaran Online: data')}.</li>
-      </ul>
-      <p class="callout warn"><b>Teaching inputs, not investment advice.</b> The figures were compiled from public sources on 22 Nov 2026 and some are flagged as estimates. Before using a number for anything real, check it against the primary source.</p>` }));
+      <p>Indian companies from ${A(SRC.screener, 'screener.in')}, US companies from ${A(SRC.sa, 'stockanalysis.com')}. Each company's links are in its "Sources" box above. More of Damodaran's data: ${A(SRC.damData, 'Damodaran Online')}.</p>
+      <p class="callout warn">These are practice inputs gathered from public sources on 22 Nov 2026. They are not investment advice.</p>` }));
   }
 
   // ------- Real companies renderer -------
   window.S11_REAL = function (host) {
-    const o = { lease: true, beta: 'reg', rfm: 'gsec', ov: {}, sel: 'mar' };
+    const o = { lease: true, beta: 'reg', rfm: 'gsec', ov: {}, sel: 'mar' }; // debt = borrowings + lease liabilities as reported; R_f = 10-year government yield
     const list = h('div', { class: 'list-co' }), detail = h('div'), cmp = h('div');
     const top = h('div', { class: 'card' },
       h('div', { class: 'kicker' }, 'Real world · data as of 20–22 Nov 2026'),
       h('h2', null, 'Hurdle rates for real companies today'),
-      h('p', { class: 'lede', html: 'The same recipe as Marriott, applied to the Marriott family today and to Indian companies. Every input is editable. Flip the switches to see which choices matter most.' }),
+      h('p', { class: 'lede', html: 'The same recipe as the Marriott case, applied to the Marriott family today and to Indian companies. Pick a company to see each step. Every input is editable.' }),
       h('div', { class: 'row', style: { gap: '18px' } },
-        h('div', null, h('div', { class: 'muted', style: { fontSize: '.82rem' } }, 'Lease liabilities'), ICF.seg([{ v: true, t: 'Count as debt' }, { v: false, t: 'Ignore' }], o.lease, v => { o.lease = v; redraw(); })),
-        h('div', null, h('div', { class: 'muted', style: { fontSize: '.82rem' } }, 'Beta'), ICF.seg([{ v: 'reg', t: 'Regression' }, { v: 'bu', t: 'Bottom-up (industry)' }], o.beta, v => { o.beta = v; redraw(); })),
-        h('div', null, h('div', { class: 'muted', style: { fontSize: '.82rem' } }, 'India R<sub>f</sub>'.replace(/<[^>]+>/g, '')), ICF.seg([{ v: 'gsec', t: 'G-sec yield (class)' }, { v: 'dam', t: 'G-sec − default spread' }], o.rfm, v => { o.rfm = v; redraw(); }))));
+        h('div', null, h('div', { class: 'muted', style: { fontSize: '.82rem' } }, 'Beta'), ICF.seg([{ v: 'reg', t: 'Regression' }, { v: 'bu', t: 'Bottom-up (industry)' }], o.beta, v => { o.beta = v; redraw(); }))));
     host.append(top);
     host.append(h('div', { class: 'grid side' }, h('div', { class: 'card tight' }, list), detail));
     host.append(h('div', { class: 'card' }, h('h3', null, 'All companies side by side'), h('div', { class: 'legend' }, h('span', null, h('i', { style: { background: 'var(--s1)', height: '10px' } }), 'E/V × Ke'), h('span', null, h('i', { class: 'hatch', style: { background: 'var(--s2)', height: '10px' } }), 'D/V × Kd(1 − t)')), cmp,
-      h('p', { class: 'muted' }, 'Rupee and dollar WACCs are not directly comparable: Indian rates include higher expected inflation (and country risk), so compare within a currency.')));
+      h('p', { class: 'muted' }, 'Compare companies within the same currency. Rupee WACCs are higher than dollar WACCs mainly because the Indian risk-free rate is higher (7.34% vs 5.05%).')));
     host.append(notesCard());
 
     const ROWS = [['mcap', 'Market value of equity'], ['debt', 'Borrowings (ex-leases)'], ['lease', 'Lease liabilities'], ['cash', 'Cash & liquid investments'], ['beta', 'Regression beta'], ['ebit', 'EBIT (latest year)'], ['int', 'Interest / finance cost']];
@@ -209,15 +167,15 @@
         ...[['WACC', P(r.w)], ['Cost of equity', P(r.ke)], ['Pre-tax K<sub>d</sub>', P(r.kd)], ['D/V', P(r.dv, 1)], ['Levered β', F.n(r.bl, 2)]].map(([l, v]) => h('div', { class: 'statbox stat' }, h('div', { class: 'v' }, v), h('div', { class: 'l', html: l }))));
       const inputs = h('div', { class: 'kv' }, ...ROWS.flatMap(([k, l]) => [h('div', null, l + (k === 'beta' || k === 'ebit' || k === 'int' ? '' : ` (${m.ccy})`) + ((k === 'lease' && c.leaseEst) || (k === 'debt' && c.debtEst) ? ' · estimate' : '')), h('div', null, inp(k))]));
       const steps = h('div', { html: `
-        <div class="step"><h4>1. Weights (market values)</h4>E = ${F.big(r.E, m.big)}, D = ${F.big(r.D, m.big)}${o.lease ? ' (incl. leases)' : ' (excl. leases)'} → D/V = <b>${P(r.dv, 1)}</b>, D/E = ${F.n(r.de, 3)}${c.bookE != null && c.bookE < 0 ? `<br><span class="muted">Book equity is ${F.usd(c.bookE, 2)} bn, which is negative, so market values are the only usable weights.</span>` : ''}</div>
+        <div class="step"><h4>1. Weights (market values)</h4>E = ${F.big(r.E, m.big)}, D = ${F.big(r.D, m.big)} (borrowings + lease liabilities) → D/V = <b>${P(r.dv, 1)}</b>, D/E = ${F.n(r.de, 3)}${c.bookE != null && c.bookE < 0 ? `<br><span class="muted">Book equity is ${F.usd(c.bookE, 2)} bn, which is negative, so market values are the only usable weights.</span>` : ''}</div>
         <div class="step"><h4>2. Beta</h4>β<sub>L</sub> = <b>${F.n(r.bl, 3)}</b> <span class="muted">(${r.note})</span>${c.betaWarn && !r.useBU ? `<br><span class="pill hard">Caution</span> ${c.betaWarn}` : ''}${o.beta === 'bu' && !c.ind ? '<br><span class="pill">No single industry fits a conglomerate, so the regression beta is used.</span>' : ''}</div>
         <div class="step"><h4>3. Cost of equity</h4>K<sub>e</sub> = ${P(r.rf)} + ${F.n(r.bl, 3)} × ${P(r.erp)} = <b>${P(r.ke)}</b></div>
-        <div class="step"><h4>4. Cost of debt (synthetic rating)</h4>Coverage = EBIT ÷ interest = ${isFinite(r.cov) ? F.n(r.cov, 2) + '×' : '∞'} → <b>${r.rt.rating}</b>, spread ${P(r.rt.spread)} → K<sub>d</sub> = ${P(r.rfD)} + ${P(r.rt.spread)} = <b>${P(r.kd)}</b>${r.rfD !== r.rf ? ' <span class=\"muted\">(debt is priced off the actual G-sec yield, which already includes India’s default spread)</span>' : ''}<br><span class="muted">Actual rating: ${c.rating}${c.lossYear ? '. Note: a loss-making year, so the coverage ratio is distorted.' : ''}</span></div>
+        <div class="step"><h4>4. Cost of debt (synthetic rating)</h4>Coverage = EBIT ÷ interest = ${isFinite(r.cov) ? F.n(r.cov, 2) + '×' : '∞'} → <b>${r.rt.rating}</b>, spread ${P(r.rt.spread)} → K<sub>d</sub> = ${P(r.rfD)} + ${P(r.rt.spread)} = <b>${P(r.kd)}</b></div>
         <div class="step"><h4>5. WACC</h4><div class="formula">${F.n(1 - r.dv, 3)} × ${P(r.ke)} + ${F.n(r.dv, 3)} × ${P(r.kd)} × (1 − ${P(r.t)}) = <b>${P(r.w)}</b></div></div>` });
       detail.append(h('div', { class: 'card' },
         h('div', { class: 'row' }, h('h3', { style: { margin: 0 } }, c.n), h('span', { class: 'pill' }, c.c === 'IN' ? 'India · ₹' : 'USA · $'), h('span', { class: 'spacer' }), h('button', { class: 'btn small', onclick: () => { delete o.ov[c.id]; redraw(); } }, 'Reset inputs')),
         h('p', { class: 'muted', style: { marginTop: '6px' } }, c.what), kpis,
-        h('div', { class: 'callout', html: '<b>Discuss:</b> ' + c.insight }),
+        h('div', { class: 'callout', html: '<b>What this shows:</b> ' + c.insight }),
         h('div', { html: coSources(c) }),
         h('div', { class: 'grid g2' }, h('div', null, h('h4', null, 'Inputs (editable)'), inputs, h('p', { class: 'faint', style: { fontSize: '.8rem', marginTop: '8px' } }, `R_f ${P(r.rf)}, ERP ${P(r.erp)}, tax ${P(r.t)}`.replace('R_f', 'Rf'))), h('div', null, h('h4', null, 'The calculation'), steps))));
       // comparison
@@ -249,7 +207,7 @@
       h('div', { class: 'grid g2' },
         h('div', { class: 'tblwrap', html: '<table class="tbl"><tr><th></th><th>1988 (case)</th><th>Nov 2026</th></tr>' +
           row('Risk-free rate', '8.95% (30-yr)', P(r.rf) + ' (10-yr)') +
-          row('Market risk premium', '5.63% (historical)', P(r.erp) + ' (implied)') +
+          row('Market risk premium', '5.63% (historical)', P(r.erp) + ' (Damodaran)') +
           row('Regression beta', '0.97', F.n(mar.beta, 2)) +
           row('Market D/V', P(M.D / (M.D + M.E), 1), P(r.dv, 1)) +
           row('Tax rate', '34%', '25%') +
@@ -257,8 +215,6 @@
           row('Market cap', '$3.6 bn', '$' + F.usd(mar.mcap, 1) + ' bn') +
           `<tr class="hl"><td>WACC</td><td>${P(base.firm.wacc)} (firm, target D/V 60%)</td><td>${P(r.w)} (current weights)</td></tr></table>` }),
         h('div', null,
-          h('p', { html: '<b>What happened to the three divisions?</b>' }),
-          h('ul', { class: 'muted', html: '<li><b>1993:</b> Marriott Corporation split in two. <b>Host Marriott</b> kept the hotel real estate and most of the debt (it later became Host Hotels & Resorts, a REIT). <b>Marriott International</b> took the management businesses.</li><li><b>1998:</b> the food-service management business (the old Contract Services) merged with Sodexho\'s North American operations to form <b>Sodexho Marriott Services</b>.</li><li><b>2016:</b> Marriott International bought Starwood and became the world\'s largest hotel company. It owns very few of the hotels it runs.</li>' }),
-          h('p', { class: 'muted', html: 'The split was driven mainly by the burden of real-estate debt (and was fought by bondholders), but it also separated businesses with very different risks, so each could be priced on its own. Open <b>Real companies</b> to see Aramark, today\'s closest analog of Contract Services.' }))));
+          h('p', { class: 'muted', html: 'Two things changed most. Interest rates are much lower (the US 10-year rate is about 5% against 8.95% for the 30-year rate in 1988), and Marriott now has far less debt relative to the market value of its shares. Both feed straight into the WACC formula you used in the case.' }))));
   };
 })();

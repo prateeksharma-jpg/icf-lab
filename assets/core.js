@@ -242,19 +242,12 @@
       sol.append(h('h4', null, 'Step-by-step solution'));
       const steps = p.steps(d, r);
       const list = h('div');
-      let shown = 0;
-      const next = h('button', { class: 'btn small primary' }, 'Next step →');
-      const all = h('button', { class: 'btn small' }, 'Show all steps');
-      const reveal = () => { if (shown < steps.length) { const sp = steps[shown]; list.append(h('div', { class: 'step' }, h('h4', null, `Step ${shown + 1}. ${sp.t}`), h('div', { html: sp.html }))); shown++; } if (shown >= steps.length) { next.remove(); all.remove(); finish(); } };
-      const finish = () => {
-        const ans = h('div', { class: 'callout good' }, h('b', null, 'Answers: '), p.parts.map((pt, i) => h('span', null, (i ? ' · ' : '') + pt.label.replace(/<[^>]+>/g, '').split(' ')[0] + ' ' + showAns(r[pt.key], pt.unit))));
-        list.append(ans);
-        if (p.takeaway) list.append(h('div', { class: 'callout', html: '<b>Exam takeaway.</b> ' + p.takeaway(d, r) }));
-      };
-      next.onclick = reveal; all.onclick = () => { while (shown < steps.length) reveal(); };
-      sol.append(list, h('div', { class: 'row' }, next, all));
+      // all steps at once, then the answers and the takeaway
+      steps.forEach((sp, i) => list.append(h('div', { class: 'step' }, h('h4', { html: `Step ${i + 1}. ${sp.t}` }), h('div', { html: sp.html }))));
+      list.append(h('div', { class: 'callout good' }, h('b', null, 'Answers: '), p.parts.map((pt, i) => h('span', null, (i ? ' · ' : '') + pt.label.replace(/<[^>]+>/g, '').split(' ')[0] + ' ' + showAns(r[pt.key], pt.unit)))));
+      if (p.takeaway) list.append(h('div', { class: 'callout', html: '<b>Exam takeaway.</b> ' + p.takeaway(d, r) }));
+      sol.append(list);
       solBox.append(sol);
-      reveal();
       btnSol.disabled = true;
     }
     wrap.append(head, body);

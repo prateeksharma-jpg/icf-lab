@@ -13,7 +13,7 @@
     { id: 'marriott', t: 'Marriott lab' },
     { id: 'real', t: 'Real companies' },
     { id: 'concepts', t: 'Concept checks' },
-    { id: 'practice', t: 'Practice problems' }];
+    { id: 'cases', t: 'Real-world cases' }];
 
   function mount(root, tabbar) {
     TABS.forEach(tb => {
@@ -26,11 +26,11 @@
     renderMarriott($('#panel-marriott'));
     renderReal($('#panel-real'));
     renderConcepts($('#panel-concepts'));
-    renderPractice($('#panel-practice'));
+    renderPractice($('#panel-cases'));
     addNotes();
-    const want = (location.hash || '').replace('#', '');
+    let want = (location.hash || '').replace('#', ''); if (want === 'practice') want = 'cases';
     go(TABS.some(t => t.id === want) ? want : 'start', true);
-    addEventListener('hashchange', () => { const w = location.hash.replace('#', ''); if (TABS.some(t => t.id === w)) go(w, true); });
+    addEventListener('hashchange', () => { let w = location.hash.replace('#', ''); if (w === 'practice') w = 'cases'; if (TABS.some(t => t.id === w)) go(w, true); });
   }
   // Detailed self-study notes (sessions/s11-notes.js). Start tab: right after the hero, first section open.
   // Other tabs: a full notes card at the bottom, with a link to it at the top.
@@ -73,7 +73,7 @@
       h('div', { class: 'row', style: { marginTop: '10px' } },
         h('button', { class: 'btn primary', onclick: () => go('hurdle') }, 'Why one rate is not enough →'),
         h('button', { class: 'btn', onclick: () => go('marriott') }, 'Jump to the Marriott lab'),
-        h('button', { class: 'btn', onclick: () => go('practice') }, 'Practice problems'))));
+        h('button', { class: 'btn', onclick: () => go('cases') }, 'Real-world cases'))));
 
     // Balance-sheet blender
     const st = { e: 0.6, ke: 0.20, kd: 0.10, t: 0.30 };
@@ -391,14 +391,14 @@
         h('div', { class: 'statbox stat' }, h('div', { class: 'v' }, '₹100 → ₹200 → ₹100'), h('div', { class: 'l' }, 'Year 1: +100%, Year 2: −50%')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--bad)' } }, 'AM = 25%'), h('div', { class: 'l' }, '(100% − 50%) ÷ 2: says you earned 25% a year')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--good)' } }, 'GM = 0%'), h('div', { class: 'l' }, '[(2)(0.5)]^½ − 1: what your wealth actually did'))),
-      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Practice problem P1 (last step) shows how much the arithmetic premium moves a WACC.')));
+      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Real-world case 1 (last step) shows how much the arithmetic premium moves a WACC.')));
 
     // Then and now
     const tn = h('div', { id: 'then-now' });
     el.append(tn);
     el._fillThenNow = () => { tn.innerHTML = ''; if (window.S11_THENNOW) tn.append(window.S11_THENNOW()); };
     el._fillThenNow();
-    el.append(h('div', { class: 'card' }, h('h3', null, 'Test yourself on the case'), h('p', { class: 'muted' }, 'Practice problem P4 (Marriott in Rajasthan) runs the whole Marriott recipe on a new company, then asks what a single firm-wide rate costs in NPV.'), h('button', { class: 'btn primary', onclick: () => { go('practice'); setTimeout(() => { const t = $('#prob-s11-P4'); if (t) { t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); } }, 50); } }, 'Go to problem P4 →')));
+    el.append(h('div', { class: 'card' }, h('h3', null, 'Use the case on a new company'), h('p', { class: 'muted' }, 'Real-world case 4 (Marriott in Rajasthan) runs the whole Marriott recipe on a new company, then asks what a single firm-wide rate costs in NPV.'), h('button', { class: 'btn primary', onclick: () => { go('cases'); setTimeout(() => { const t = $('#prob-s11-P4'); if (t) { t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); } }, 50); } }, 'Go to case 4 →')));
     draw();
   }
 
@@ -423,7 +423,7 @@
     { q: 'A promoter owns 45% of a listed company and never trades. Mutual funds and FPIs hold the rest and trade daily. Whose view of risk sets the cost of equity?', opts: ['The promoter\'s, as the largest shareholder', 'The diversified marginal investors who set the price on the next trade, for whom only systematic (beta) risk matters', 'The board\'s', 'The average retail investor\'s'], a: 1, why: 'Prices are set at the margin by investors who actually trade, and they are well diversified. That is why CAPM uses beta (systematic risk) and ignores firm-specific volatility.' },
     { q: 'Marriott\'s Lodging division has the highest cost of equity (16.92%) but the lowest WACC (9.31%). Why?', opts: ['Lodging pays less tax', 'Lodging is financed with 74% debt, and debt is much cheaper than equity after tax; its low business risk (β<sub>U</sub> = 0.49) is what allows so much debt', 'The case uses a different risk-free rate for Lodging', 'Lodging has no equity'], a: 1, why: 'K<sub>e</sub> is high because 74% debt makes Lodging\'s equity very risky (β<sub>L</sub> = 1.42). But equity is only 26% of its capital. The other 74% costs just 10.05% × (1 − 0.34) = 6.63%. WACC = 0.26 × 16.92% + 0.74 × 6.63% = 9.31%.' },
     { q: 'Within Restaurants, a new and unproven cuisine format is much riskier than the division average. Its hurdle rate should be:', opts: ['The Restaurant WACC, 11.30%', 'Above 11.30%: project risk exceeds division risk', 'The firm WACC, 10.61%', 'Below 11.30%, because it diversifies the division'], a: 1, why: 'Firm < division < project: the division rate is a starting point. When a project is clearly riskier (or safer) than its division, adjust the rate, ideally using a beta from businesses that resemble the project.' },
-    { q: 'Each Marriott division adds its own spread (Lodging 1.10%, Restaurants 1.80%) even though Marriott borrows as one company. Why?', opts: ['Banks lend to each division separately in practice', 'Each division\'s assets support a different amount of debt at a different default risk; charging the right spread keeps every hurdle consistent with that division\'s own risk', 'To make the WACCs different', 'Because of different tax rates'], a: 1, why: 'Hotels are long-lived real estate that make good collateral, so lenders lend more against them at a lower spread; restaurants cannot. The hurdle rate should use the debt capacity and credit risk of the assets being financed, not those of the whole firm.' },
+    { q: 'Each Marriott division adds its own spread (Lodging 1.10%, Restaurants 1.80%) even though Marriott borrows as one company. Why?', opts: ['Banks lend to each division separately', 'Each division\'s assets support a different amount of debt at a different default risk; charging the right spread keeps every hurdle consistent with that division\'s own risk', 'To make the WACCs different', 'Because of different tax rates'], a: 1, why: 'Hotels are long-lived real estate that make good collateral, so lenders lend more against them at a lower spread; restaurants cannot. The hurdle rate should use the debt capacity and credit risk of the assets being financed, not those of the whole firm.' },
     { q: 'In a market sell-off investors become more risk averse. What happens to the market risk premium and to corporate hurdle rates?', opts: ['Both fall', 'MRP rises and hurdle rates rise, so fewer projects clear them', 'MRP rises but hurdle rates are unchanged', 'Nothing: the premium is a long-run constant'], a: 1, why: 'The premium is the wealth-weighted average of what investors demand per unit of risk. More risk aversion means a higher premium, a higher K<sub>e</sub> and WACC, and lower project values. Investors demanded much higher premiums in the March 2020 sell-off for exactly this reason.' },
     { q: 'Which risk-free rate should a 30-year hotel project use?', opts: ['The 1-year T-bill rate, because it is the most "risk-free"', 'A long-term government bond yield, because the project\'s cash flows stretch over many years', 'The repo rate', 'Whichever is lowest'], a: 1, why: 'The risk-free rate should come from a long-term government bond, as on the class slides (typically the 10-year yield). Hotels produce cash flows for decades, which is why the Marriott case uses the 30-year Treasury yield of 8.95%.' },
   ];
@@ -433,7 +433,7 @@
     const lab = h('span', { class: 'muted' });
     const upd = () => { const q = Store.get('icf-quiz', {}); const n = QUIZ.filter((_, i) => q['s11-q' + i]).length; prog.firstChild.style.width = (n / QUIZ.length * 100) + '%'; lab.textContent = `${n} / ${QUIZ.length} answered correctly at least once`; };
     el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Concept checks'), h('h2', null, 'Do you understand why, not just how?'),
-      h('p', { class: 'lede' }, 'Pick an answer to see the explanation. Wrong answers are explained too. These are the reasoning questions that separate a B from an A in the end-term.'),
+      h('p', { class: 'lede' }, 'Pick an answer to see the explanation. Wrong answers are explained too. These questions test the reasoning behind each formula.'),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab)));
     const box = h('div', { class: 'grid g2' });
     QUIZ.forEach((q, i) => mcq(Object.assign({}, q, { q: `<span class="pill accent">Q${i + 1}</span> ${q.q}` }), box, 's11-q' + i, upd));
@@ -447,10 +447,10 @@
     const prog = h('div', { class: 'progressbar' }, h('div', { style: { width: '0%' } }));
     const lab = h('span', { class: 'muted' });
     const upd = () => { const st = Store.get('icf-progress', {}); const n = all.filter(p => st[p.id] && st[p.id].solved).length; prog.firstChild.style.width = (n / all.length * 100) + '%'; lab.textContent = `${n} / ${all.length} solved`; };
-    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Exam-level practice'), h('h2', null, `${all.length} exam-level hard problems`),
-      h('p', { class: 'lede', html: 'Each problem chains several steps, the way end-term questions do. Attempt first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
+    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Apply the concepts'), h('h2', null, `${all.length} real-world cases`),
+      h('p', { class: 'lede', html: 'Each case is a real-world situation that uses several steps of this session. Work it out first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab),
-      h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Problem</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#practice" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));
+      h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Case</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#cases" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));
     $$('a[data-prob]', el).forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = $('#prob-' + a.dataset.prob); t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); }));
     const sec = h('div', { style: { marginTop: '18px' } });
     all.forEach(p => problem(p, sec, upd));

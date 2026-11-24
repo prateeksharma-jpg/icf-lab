@@ -49,7 +49,7 @@
       insight: 'People keep paying their phone bills in good times and bad, so the beta is low (0.67). Its debt is large in rupees (about ₹1.95 lakh crore including leases) but only about 13% of firm value, because its shares are worth far more. So its WACC is still mostly its cost of equity.' },
     { id: 'mar-i', n: 'Maruti Suzuki', c: 'IN', grp: 'Indian bellwethers', mcap: 440509, debt: 70, lease: 103, cash: 78758, beta: 1.11, ebit: 19357, int: 239, ind: ['Auto & Truck (India)', 1.11],
       what: 'India\'s largest car maker. It holds a large pile of cash and investments and has almost no borrowings.',
-      insight: 'Cash is about 18% of its firm value. Cash has a beta of about zero, so in bottom-up mode the car business beta is scaled down by (1 − cash/V), as in the 2025 mid-term Maruti question.' },
+      insight: 'Cash is about 18% of its firm value. Cash has a beta of about zero, so in bottom-up mode the car business beta is scaled down by (1 − cash/V).' },
     { id: 'tcs', n: 'TCS', c: 'IN', grp: 'Indian bellwethers', mcap: 859730, debt: 0, lease: 11283, cash: 41080, beta: 0.74, ebit: 66714, int: 1227, ind: ['Computer Services (India)', 0.74],
       what: 'India\'s largest IT services company. It has no borrowings.',
       insight: 'With almost no debt, debt is a tiny share of its capital, so its WACC is almost exactly its cost of equity.' }
@@ -132,7 +132,7 @@
       <p>India 25.17% (the corporate tax rate under the new regime, ${A(SRC.itax, 'Income Tax Department')}); US 25% (federal plus state).</p>
       <h4>7. Company data</h4>
       <p>Indian companies from ${A(SRC.screener, 'screener.in')}, US companies from ${A(SRC.sa, 'stockanalysis.com')}. Each company's links are in its "Sources" box above. More of Damodaran's data: ${A(SRC.damData, 'Damodaran Online')}.</p>
-      <p class="callout warn">These are practice inputs gathered from public sources on 22 Nov 2026. They are not investment advice.</p>` }));
+      <p class="callout warn">These inputs were gathered from public sources on 22 Nov 2026. They are not investment advice.</p>` }));
   }
 
   // ------- Real companies renderer -------

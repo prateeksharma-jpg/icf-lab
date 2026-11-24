@@ -15,7 +15,7 @@
         <div class="callout"><b>Worked example (from class).</b> Assets of ₹100 cr are financed by ₹60 cr of equity at K<sub>e</sub> = 20% and ₹40 cr of debt at K<sub>d</sub> = 10%. The tax rate is 30%. Interest of ₹4 cr saves ₹1.2 cr of tax, so debt really costs 10% × (1 − 0.3) = 7%.<br>WACC = 0.6 × 20% + 0.4 × 7% = <b>14.8%</b>. The assets must earn at least 14.8% a year.</div>`],
       ['2. Cost of equity: CAPM and its three inputs',
         `<div class="formula">K<sub>e</sub> = R<sub>f</sub> + β<sub>L</sub> × (R<sub>m</sub> − R<sub>f</sub>)</div>
-        <p><b>Risk-free rate R<sub>f</sub>.</b> The return investors demand even when there is no risk: compensation for waiting. Economically it reflects <b>expected real growth plus expected inflation</b>. In practice use the yield on a long-term government bond in the <b>same currency</b> as the cash flows: the 10-year G-sec for rupee cash flows, or (cleaner) the 10-year zero-coupon yield. The Marriott case uses the 30-year Treasury (8.95%) because hotels produce cash flows for decades.</p>
+        <p><b>Risk-free rate R<sub>f</sub>.</b> The return investors demand even when there is no risk: compensation for waiting. Economically it reflects <b>expected real growth plus expected inflation</b>. In real use, take the yield on a long-term government bond in the <b>same currency</b> as the cash flows: the 10-year G-sec for rupee cash flows, or (cleaner) the 10-year zero-coupon yield. The Marriott case uses the 30-year Treasury (8.95%) because hotels produce cash flows for decades.</p>
         <p><b>Beta β<sub>L</sub>.</b> How much <i>systematic</i> (market) risk the equity carries. Only systematic risk is rewarded, because the <b>marginal investor</b> (the one most likely to make the next trade and set the price) is well diversified and has already diversified away firm-specific risk. The largest shareholder is often not the marginal investor (a founder or promoter who never trades does not set the price). A beta from regressing the stock's returns on the market is a <b>levered</b> beta: it contains the risk of the business <i>and</i> of the firm's debt. Beta is higher for:</p>
         <ul><li><b>discretionary products</b> (hotels, cars, luxury) than for necessities, because demand swings with the economy;</li><li><b>high operating leverage</b>: a large share of fixed costs, so profits swing more than sales;</li><li><b>high financial leverage</b>: more debt, so equity holders bear more of the swing.</li></ul>
         <p><b>Market risk premium (R<sub>m</sub> − R<sub>f</sub>).</b> The extra return investors demand per unit of beta. If our class were the whole market, the premium would be a <b>wealth-weighted average</b> of what each of us demands ("dollar-weighted democracy"). When investors become more risk averse, the premium <b>rises</b>, so hurdle rates rise and project values fall.</p>
@@ -95,7 +95,7 @@
         <li><b>With taxes, small spread</b>: WACC <b>falls</b> as debt rises, because every rupee of interest saves t rupees of tax (the interest tax shield).</li>
         <li><b>With taxes, large spread</b>: WACC rises from the very first rupee of debt. With a fixed spread the WACC line is straight, so it either falls all the way or rises all the way. It rises when the spread × (1 − t) is larger than t × (R<sub>f</sub> + β<sub>U</sub> × MRP), which at the default settings means a spread above about 4.3%.</li></ul>`],
       ['Spread follows the rating: why WACC is U-shaped',
-        `<p>In this mode the cost of debt is not fixed. Interest coverage = EBIT ÷ interest = (EBIT/V) ÷ [(D/V) × K<sub>d</sub>]. More debt means more interest, lower coverage, a worse synthetic rating and a higher spread, which in turn raises interest again. The machine iterates until the rating is self-consistent (as in practice problem P2). The kinks in the curves are rating downgrades. At low leverage the tax shield dominates and WACC falls; at high leverage the rising spread dominates and WACC rises. The lowest point shows the debt level with the lowest WACC.</p>
+        `<p>In this mode the cost of debt is not fixed. Interest coverage = EBIT ÷ interest = (EBIT/V) ÷ [(D/V) × K<sub>d</sub>]. More debt means more interest, lower coverage, a worse synthetic rating and a higher spread, which in turn raises interest again. The machine iterates until the rating is self-consistent (as in real-world case 2). The kinks in the curves are rating downgrades. At low leverage the tax shield dominates and WACC falls; at high leverage the rising spread dominates and WACC rises. The lowest point shows the debt level with the lowest WACC.</p>
         <p>The "EBIT / firm value" slider sets how profitable the firm is relative to its size. A more profitable firm keeps higher coverage at the same debt, so its lowest-WACC D/V is further to the right.</p>`],
       ['Reading the decomposition bars',
         `<ul><li><b>Cost of equity</b> = R<sub>f</sub> (time value) + β<sub>U</sub> × MRP (business-risk premium) + (β<sub>L</sub> − β<sub>U</sub>) × MRP (financial-risk premium, the extra return equity demands because of debt).</li>
@@ -164,8 +164,8 @@
   };
 
   /* ------------------------------------------------------------------ PRACTICE */
-  N.practice = {
-    title: 'Notes: how to approach these problems',
+  N.cases = {
+    title: 'Notes: how to approach these cases',
     sections: [
       ['A five-step routine',
         `<ol><li><b>List what you are given</b> and in which form: D/V or D/E? Book or market values? A levered or an unlevered beta, and at which leverage was it measured?</li>

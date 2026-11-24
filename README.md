@@ -9,7 +9,7 @@ Interactive companion to *Introduction to Corporate Finance* (IIM Udaipur, 2026)
 - **Marriott lab:** rebuilds the case solution live from the exhibits; change any assumption and see what moves.
 - **Real companies:** today's Marriott, Hilton, McDonald's, Aramark and nine Indian companies (data as of Nov 2026).
 - **Concept checks:** 14 reasoning questions with explanations.
-- **Practice problems:** 5 hard, exam-level problems that together cover every step of the session, with hints and step-by-step solutions that unlock after an attempt.
+- **Real-world cases:** 5 hard real-world cases that together use every step of the session, with hints and step-by-step solutions that unlock after an attempt.
 
 Open `index.html` in a browser; there is no build step. Progress is stored only in the student's browser.
 

@@ -119,15 +119,14 @@
     parts: [
       { key: 'bBiz', label: '(a) Pure business (operating-asset) beta of EV makers', unit: 'x' },
       { key: 'blM', label: '(b) Mewar\'s levered beta at target D/E', unit: 'x' },
-      { key: 'ke', label: '(c) Mewar\'s cost of equity', unit: '%' },
-      { key: 'keNoCash', label: '(d) Cost of equity if Mewar pays out all its cash as a special dividend (same D/E)', unit: '%' }],
+      { key: 'ke', label: '(c) Mewar\'s cost of equity', unit: '%' }],
     hints: ['Strip out both leverage (unlever) and cash (divide by 1 − cash/V). Both are multiplicative, so the order does not matter. Then add back Mewar\'s cash and Mewar\'s leverage.'],
     steps: (d, r) => [
       { t: 'Remove the comparables\' leverage', html: `β<sub>U</sub> (incl. cash) = ${d.bComp} ÷ [1 + ${d.deComp} × ${1 - d.t}] = ${N(r.buC)}` },
       { t: 'Remove the comparables\' cash', html: `Cash has a beta of 0, so it drags the measured beta down. β<sub>business</sub> = ${N(r.buC)} ÷ (1 − ${d.cashComp}) = <b>${N(r.bBiz)}</b>` },
       { t: 'Add Mewar\'s cash, then Mewar\'s leverage', html: `β<sub>U, Mewar</sub> = ${N(r.bBiz)} × (1 − ${d.cashM}) = ${N(r.buM)}<br>β<sub>L</sub> = ${N(r.buM)} × [1 + ${d.deM} × ${1 - d.t}] = <b>${N(r.blM)}</b>` },
       { t: 'Cost of equity', html: `K<sub>e</sub> = ${P(d.rf, 1)} + ${N(r.blM)} × ${P(d.mrp, 1)} = <b>${P(r.ke)}</b>` },
-      { t: 'Pay out the cash', html: `With no cash, β<sub>U</sub> = β<sub>business</sub> = ${N(r.bBiz)}; β<sub>L</sub> = ${N(r.blNoCash)}; K<sub>e</sub> = <b>${P(r.keNoCash)}</b>. Equity holders are left holding only the risky business, so they demand more.` }],
+      { t: 'Extra insight (not asked): what if Mewar paid out all its cash?', html: `With no cash, β<sub>U</sub> = β<sub>business</sub> = ${N(r.bBiz)}; β<sub>L</sub> = ${N(r.blNoCash)}; K<sub>e</sub> = <b>${P(r.keNoCash)}</b>. Equity holders are left holding only the risky business, so they demand more.` }],
     takeaway: () => 'Cash-rich comparables (common in Indian IT and autos) make the business look safer than it is. Clean out both leverage <i>and</i> cash before borrowing a comparable\'s beta.'
   });
 
@@ -187,10 +186,9 @@
   problems.push({
     id: 's11-P5', code: 'Case 2', level: 'Medium', marks: 7,
     title: 'Debt-funded acquisition: the acquirer\'s beta jumps',
-    covers: 'Value-weighted asset betas · leverage after a deal · the hurdle depends on the asset, not the financing',
+    covers: 'Unlevering · value-weighted asset betas · relevering after a debt-funded deal',
     data: { E: 8000, D: 2000, bl: 0.85, t: 0.25, price: 3000, buT: 1.6, rf: 0.065, mrp: 0.07, kd: 0.09 },
-    story: d => `<p><b>Jaisalmer Foods</b> (packaged snacks) has equity of ₹${F.big(d.E)} cr, debt of ₹${F.big(d.D)} cr and an equity beta of <b>${d.bl}</b>, measured at today's leverage. It is buying a cloud-kitchen start-up for <b>₹${F.big(d.price)} cr</b> (a fair price, so NPV = 0), funded <b>entirely with new debt</b>. Cloud-kitchen comparables have an unlevered beta of <b>${d.buT}</b>. Tax = ${P(d.t, 0)}, R<sub>f</sub> = ${P(d.rf)}, MRP = ${P(d.mrp, 0)}. After the deal Jaisalmer can borrow at ${P(d.kd, 0)}, and it plans to keep its post-deal D/V.</p>
-      <p>The CFO argues: "We are funding the cloud kitchens with a 9% loan, so their hurdle rate is 9%."</p>`,
+    story: d => `<p><b>Jaisalmer Foods</b> (packaged snacks) has equity of ₹${F.big(d.E)} cr, debt of ₹${F.big(d.D)} cr and an equity beta of <b>${d.bl}</b>, measured at today's leverage. It is buying a cloud-kitchen start-up for <b>₹${F.big(d.price)} cr</b> (a fair price, so NPV = 0), funded <b>entirely with new debt</b>. Cloud-kitchen comparables have an unlevered beta of <b>${d.buT}</b>. Tax = ${P(d.t, 0)}, R<sub>f</sub> = ${P(d.rf)}, MRP = ${P(d.mrp, 0)}. After the deal Jaisalmer can borrow at ${P(d.kd, 0)}, and it plans to keep its post-deal D/V.</p>`,
     solve(d) {
       const V0 = d.E + d.D, bu0 = Fin.unlever(d.bl, d.D / d.E, d.t), V1 = V0 + d.price, D1 = d.D + d.price, E1 = d.E;
       const bu1 = (V0 * bu0 + d.price * d.buT) / V1, bl1 = Fin.lever(bu1, D1 / E1, d.t), ke1 = Fin.capm(d.rf, bl1, d.mrp);
@@ -200,14 +198,13 @@
     parts: [
       { key: 'bu0', label: '(a) Jaisalmer\'s unlevered beta before the deal', unit: 'x' },
       { key: 'bu1', label: '(b) Unlevered beta after the deal', unit: 'x' },
-      { key: 'bl1', label: '(c) Equity beta after the deal', unit: 'x' },
-      { key: 'wK', label: '(d) Correct hurdle rate for future cloud-kitchen expansion, at the group\'s new D/V', unit: '%' }],
+      { key: 'bl1', label: '(c) Equity beta after the deal', unit: 'x' }],
     hints: ['A debt-funded purchase leaves equity unchanged but adds ₹3,000 cr to both debt and firm value.', 'Two things push the equity beta up at once: a riskier asset mix and more leverage.'],
     steps: (d, r) => [
       { t: 'Before', html: `β<sub>U,0</sub> = ${d.bl} ÷ [1 + ${F.n(d.D / d.E, 3)} × ${1 - d.t}] = <b>${N(r.bu0)}</b>` },
       { t: 'New asset mix', html: `V = ${F.big(d.E + d.D)} + ${F.big(d.price)} = ${F.big(r.V1)}<div class="formula">β<sub>U,1</sub> = (${F.big(d.E + d.D)} × ${N(r.bu0)} + ${F.big(d.price)} × ${d.buT}) ÷ ${F.big(r.V1)} = <b>${N(r.bu1)}</b></div>` },
       { t: 'New leverage', html: `D = ${F.big(r.D1)}, E = ${F.big(r.E1)} (unchanged) → D/E = ${F.n(r.D1 / r.E1, 4)}<br>β<sub>L,1</sub> = ${N(r.bu1)} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = <b>${N(r.bl1)}</b> (up from ${d.bl}). K<sub>e</sub> rises to ${P(r.ke1)}.` },
-      { t: 'Cloud-kitchen hurdle', html: `β<sub>L</sub> = ${d.buT} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = ${N(r.blK)} → K<sub>e</sub> = ${P(r.keK)}<div class="formula">Hurdle = ${F.n(r.E1 / r.V1, 4)} × ${P(r.keK)} + ${F.n(r.D1 / r.V1, 4)} × ${P(d.kd, 0)} × ${1 - d.t} = <b>${P(r.wK)}</b></div>The CFO is wrong: the 9% loan does <i>not</i> make the cloud-kitchen business a 9% (or 6.75%) business. (In Case 5 each division has its own target leverage. Here Jaisalmer finances the whole group at one D/V, so that is the leverage the cloud-kitchen hurdle uses.)` }],
+      { t: 'Extra insight (not asked): the hurdle rate for future cloud-kitchen projects', html: `Suppose the CFO says: "We are funding the cloud kitchens with a 9% loan, so their hurdle rate is 9%." The hurdle must reflect the risk of the cloud-kitchen business, financed at the group's D/V:<br>β<sub>L</sub> = ${d.buT} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = ${N(r.blK)} → K<sub>e</sub> = ${P(r.keK)}<div class="formula">Hurdle = ${F.n(r.E1 / r.V1, 4)} × ${P(r.keK)} + ${F.n(r.D1 / r.V1, 4)} × ${P(d.kd, 0)} × ${1 - d.t} = <b>${P(r.wK)}</b></div>The CFO is wrong: the 9% loan does <i>not</i> make the cloud-kitchen business a 9% (or 6.75%) business. (In Case 5 each division has its own target leverage. Here Jaisalmer finances the whole group at one D/V, so that is the leverage the cloud-kitchen hurdle uses.)` }],
     takeaway: () => 'The source of finance does not set the hurdle rate; the risk of the asset does. "We are funding it with a 9% loan, so the hurdle is 9%" is one of the most common mistakes in real boardrooms.'
   });
 

@@ -245,7 +245,7 @@
       // all steps at once, then the answers and the takeaway
       steps.forEach((sp, i) => list.append(h('div', { class: 'step' }, h('h4', { html: `Step ${i + 1}. ${sp.t}` }), h('div', { html: sp.html }))));
       list.append(h('div', { class: 'callout good' }, h('b', null, 'Answers: '), p.parts.map((pt, i) => h('span', null, (i ? ' · ' : '') + pt.label.replace(/<[^>]+>/g, '').split(' ')[0] + ' ' + showAns(r[pt.key], pt.unit)))));
-      if (p.takeaway) list.append(h('div', { class: 'callout', html: '<b>Exam takeaway.</b> ' + p.takeaway(d, r) }));
+      if (p.takeaway) list.append(h('div', { class: 'callout', html: '<b>Real-world takeaway.</b> ' + p.takeaway(d, r) }));
       sol.append(list);
       solBox.append(sol);
       btnSol.disabled = true;

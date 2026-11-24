@@ -16,7 +16,7 @@
 
   /* ---------------- P1: build a WACC from raw market data ---------------- */
   problems.push({
-    id: 's11-P1', code: 'Case 1', marks: 8,
+    id: 's11-P1', code: 'Case 3', level: 'Hard', marks: 8,
     title: 'Build a WACC from raw market data',
     covers: 'Historical risk premium (CAGR) · YTM as K<sub>d</sub> · relevering a stale beta · market-value weights',
     data: {
@@ -68,7 +68,7 @@
 
   /* ---------------- P2: synthetic rating and a leveraged buyback ---------------- */
   problems.push({
-    id: 's11-P2', code: 'Case 2', marks: 8,
+    id: 's11-P2', code: 'Case 4', level: 'Hard', marks: 8,
     title: 'Synthetic ratings: what happens to K<sub>d</sub> when you borrow more',
     covers: 'Interest coverage → synthetic rating → spread · Hamada relevering · WACC before and after borrowing to buy back shares',
     data: { ebit: 1200, E: 12000, D: 3000, add: 2500, bl: 1.10, t: 0.25, rf: 0.065, mrp: 0.07 },
@@ -103,7 +103,7 @@
 
   /* ---------------- P3: bottom-up beta with cash ---------------- */
   problems.push({
-    id: 's11-P3', code: 'Case 3', marks: 6,
+    id: 's11-P3', code: 'Case 1', level: 'Medium', marks: 6,
     title: 'Bottom-up beta with cash: an all-equity carmaker goes EV',
     covers: 'Unlevering comparables · removing and adding cash · relevering at a target D/E · CAPM',
     data: { bComp: 1.20, deComp: 0.40, cashComp: 0.12, cashM: 0.06, deM: 0.25, t: 0.25, rf: 0.064, mrp: 0.072 },
@@ -133,7 +133,7 @@
 
   /* ---------------- P4: Marriott in Rajasthan ---------------- */
   problems.push({
-    id: 's11-P4', code: 'Case 4', marks: 10,
+    id: 's11-P4', code: 'Case 5', level: 'Hard', marks: 10,
     title: 'Marriott in Rajasthan: divisional hurdles, and the cost of using one rate',
     covers: 'Unlevering parent and comparables · backing out the orphan division · divisional WACCs · firm-wide WACC · NPV damage from the wrong hurdle',
     data: {
@@ -185,7 +185,7 @@
 
   /* ---------------- P5: debt-funded acquisition ---------------- */
   problems.push({
-    id: 's11-P5', code: 'Case 5', marks: 7,
+    id: 's11-P5', code: 'Case 2', level: 'Medium', marks: 7,
     title: 'Debt-funded acquisition: the acquirer\'s beta jumps',
     covers: 'Value-weighted asset betas · leverage after a deal · the hurdle depends on the asset, not the financing',
     data: { E: 8000, D: 2000, bl: 0.85, t: 0.25, price: 3000, buT: 1.6, rf: 0.065, mrp: 0.07, kd: 0.09 },
@@ -207,10 +207,11 @@
       { t: 'Before', html: `β<sub>U,0</sub> = ${d.bl} ÷ [1 + ${F.n(d.D / d.E, 3)} × ${1 - d.t}] = <b>${N(r.bu0)}</b>` },
       { t: 'New asset mix', html: `V = ${F.big(d.E + d.D)} + ${F.big(d.price)} = ${F.big(r.V1)}<div class="formula">β<sub>U,1</sub> = (${F.big(d.E + d.D)} × ${N(r.bu0)} + ${F.big(d.price)} × ${d.buT}) ÷ ${F.big(r.V1)} = <b>${N(r.bu1)}</b></div>` },
       { t: 'New leverage', html: `D = ${F.big(r.D1)}, E = ${F.big(r.E1)} (unchanged) → D/E = ${F.n(r.D1 / r.E1, 4)}<br>β<sub>L,1</sub> = ${N(r.bu1)} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = <b>${N(r.bl1)}</b> (up from ${d.bl}). K<sub>e</sub> rises to ${P(r.ke1)}.` },
-      { t: 'Cloud-kitchen hurdle', html: `β<sub>L</sub> = ${d.buT} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = ${N(r.blK)} → K<sub>e</sub> = ${P(r.keK)}<div class="formula">Hurdle = ${F.n(r.E1 / r.V1, 4)} × ${P(r.keK)} + ${F.n(r.D1 / r.V1, 4)} × ${P(d.kd, 0)} × ${1 - d.t} = <b>${P(r.wK)}</b></div>The CFO is wrong: the 9% loan does <i>not</i> make the cloud-kitchen business a 9% (or 6.75%) business. (In Case 4 each division had its own target leverage. Here Jaisalmer finances the whole group at one D/V, so that is the leverage the cloud-kitchen hurdle uses.)` }],
+      { t: 'Cloud-kitchen hurdle', html: `β<sub>L</sub> = ${d.buT} × [1 + ${F.n(r.D1 / r.E1, 4)} × ${1 - d.t}] = ${N(r.blK)} → K<sub>e</sub> = ${P(r.keK)}<div class="formula">Hurdle = ${F.n(r.E1 / r.V1, 4)} × ${P(r.keK)} + ${F.n(r.D1 / r.V1, 4)} × ${P(d.kd, 0)} × ${1 - d.t} = <b>${P(r.wK)}</b></div>The CFO is wrong: the 9% loan does <i>not</i> make the cloud-kitchen business a 9% (or 6.75%) business. (In Case 5 each division has its own target leverage. Here Jaisalmer finances the whole group at one D/V, so that is the leverage the cloud-kitchen hurdle uses.)` }],
     takeaway: () => 'The source of finance does not set the hurdle rate; the risk of the asset does. "We are funding it with a 9% loan, so the hurdle is 9%" is one of the most common mistakes in real boardrooms.'
   });
 
-  window.S11_PROBLEMS = problems;
+  // 2 medium cases first, then 3 hard ones
+  window.S11_PROBLEMS = ['s11-P3', 's11-P5', 's11-P1', 's11-P2', 's11-P4'].map(id => problems.find(p => p.id === id));
   window.S11_PT = PT;
 })();

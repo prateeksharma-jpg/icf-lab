@@ -193,7 +193,7 @@
     const head = h('div', { class: 'prob-head', onclick: () => wrap.classList.toggle('open') },
       h('span', { class: 'pill accent' }, p.code || p.id),
       h('h3', { html: p.title }),
-      h('span', { class: 'pill hard' }, p.level || 'Hard'),
+      h('span', { class: 'pill ' + ((p.level || 'Hard') === 'Hard' ? 'hard' : 'medium') }, p.level || 'Hard'),
       status);
     const body = h('div', { class: 'prob-body' });
     if (p.covers) body.append(h('p', { class: 'muted', style: { margin: '0 0 8px' }, html: '<b>Covers:</b> ' + p.covers }));

@@ -21,7 +21,7 @@
     covers: 'Historical risk premium (CAGR) · YTM as K<sub>d</sub> · relevering a stale beta · market-value weights',
     data: {
       rm: [0.27, -0.07, 0.36, 0.04, 0.24, 0.02], rfr: [0.07, 0.08, 0.06, 0.09, 0.07, 0.07], rf: 0.0734,
-      c: 9, face: 100, n: 6, price: 102.4, Dface: 4000, E: 6000, bl: 0.9, deOld: 0.30, t: 0.2517
+      c: 9, face: 100, n: 3, price: 101.35, Dface: 4000, E: 6000, bl: 0.9, deOld: 0.30, t: 0.2517
     },
     story: d => `<p><b>Rana Power Ltd</b> wants its WACC. You have the following.</p>
       <p><b>Market returns.</b> Six years of annual total returns on the Nifty 50 and on 10-year G-secs:</p>` +
@@ -48,11 +48,11 @@
       { key: 'hrp', label: '(a) Market risk premium (geometric)', unit: '%' },
       { key: 'y', label: '(b) Pre-tax cost of debt', unit: '%' },
       { key: 'dv', label: '(c) Debt-to-value ratio (D/V) at market values', unit: '%' },
-      { key: 'bl', label: '(d) Rana\'s levered beta today', unit: 'x', tol: 0.005 },
+      { key: 'bl', label: '(d) Rana\'s levered beta today', unit: 'x', abs: 0.003 },
       { key: 'w', label: '(e) Rana\'s WACC', unit: '%' }],
     hints: ['CAGR = [(1+r<sub>1</sub>)(1+r<sub>2</sub>)…(1+r<sub>6</sub>)]<sup>1/6</sup> − 1, for each series.',
-      'The cost of debt is what lenders demand today: solve 102.4 = Σ 9/(1+y)<sup>t</sup> + 100/(1+y)<sup>6</sup> (trial and error, or RATE in Excel). The bond trades above par, so y is below 9%.',
-      'The regression beta carries the old D/E of 0.30. Unlever at 0.30, then relever at today\'s market D/E = (4,000 × 1.024) ÷ 6,000.'],
+      'The cost of debt is what lenders demand today: solve 101.35 = 9/(1+y) + 9/(1+y)<sup>2</sup> + 109/(1+y)<sup>3</sup> by trial and error on your calculator (try 8%, then 9%, and narrow down). The bond trades above par, so y is below 9%.',
+      'The regression beta carries the old D/E of 0.30. Unlever at 0.30, then relever at today\'s market D/E = (4,000 × 1.0135) ÷ 6,000.'],
     steps: (d, r) => [
       { t: 'Market risk premium', html: `CAGR(Nifty) = [${d.rm.map(x => F.n(1 + x, 2)).join(' × ')}]<sup>1/6</sup> − 1 = ${P(r.cm)}<br>CAGR(G-sec) = [${d.rfr.map(x => F.n(1 + x, 2)).join(' × ')}]<sup>1/6</sup> − 1 = ${P(r.cf)}<br>MRP = <b>${P(r.hrp)}</b>. (The arithmetic version would be ${P(r.hrpA)}: a volatile series always has an arithmetic mean above its CAGR.)` },
       { t: 'Cost of debt = YTM, not the coupon', html: `<div class="formula">${d.price} = Σ<sub>t=1..${d.n}</sub> ${d.c}/(1+y)<sup>t</sup> + 100/(1+y)<sup>${d.n}</sup> ⟹ y = <b>${P(r.y)}</b></div>The ${d.c}% coupon was fixed at issue. Lenders today accept ${P(r.y)}, so that is the cost of new borrowing. After tax: ${P(r.y)} × (1 − ${d.t}) = ${P(r.y * (1 - d.t))}.` },
@@ -140,7 +140,7 @@
       E: 18000, D: 9000, bl: 1.30, kdNow: 0.08, t: 0.25, rf: 0.065, mrp: 0.07,
       w: { H: 0.5, Q: 0.3, F: 0.2 }, comp: { H: { b: 1.35, dv: 0.40 }, Q: { b: 0.95, dv: 0.20 } },
       tgt: { H: { dv: 0.55, s: 0.015 }, Q: { dv: 0.25, s: 0.012 }, F: { dv: 0.30, s: 0.020 } },
-      X: { c0: -500, c: 127, n: 6 }, Y: { c0: -400, c: 97, n: 6 }
+      X: { c0: -1000, c: 428, n: 3 }, Y: { c0: -1000, c: 416, n: 3 }
     },
     story: d => `<p><b>Aravalli Group</b> runs three divisions: Hotels, Quick-Service Restaurants (QSR) and Facility Services (FS). Its equity is worth ₹${F.big(d.E)} cr and its debt ₹${F.big(d.D)} cr; it currently borrows at <b>${P(d.kdNow, 0)}</b>. Its regression beta, measured at today's leverage, is <b>${d.bl}</b>. Using identifiable assets, Hotels, QSR and FS make up ${d.w.H * 100}%, ${d.w.Q * 100}% and ${d.w.F * 100}% of firm value. There are no listed pure-play facility-services firms in India.</p>` +
       tbl(['', 'Comparables β<sub>L</sub> (avg)', 'Comparables D/V (avg)', 'Target D/V', 'Debt spread over R<sub>f</sub>'], [
@@ -149,7 +149,7 @@
         ['Facility Services', '–', '–', P(d.tgt.F.dv, 0), P(d.tgt.F.s, 1)]]) +
       `<p>Tax = ${P(d.t, 0)}, R<sub>f</sub> = ${P(d.rf)}, MRP = ${P(d.mrp, 0)}.</p>
       <p>Until now Aravalli has evaluated every project at its <b>firm-wide WACC</b> (current market weights, current K<sub>d</sub>). Two proposals reach the investment committee:</p>` +
-      tbl(['Project (₹ cr)', 't = 0', 'Years 1–6 (each)', 'IRR (given)'], [['X: hospital facility-management contract (FS)', d.X.c0, '+' + d.X.c, P(Fin.irr([d.X.c0, ...Array(d.X.n).fill(d.X.c)]))], ['Y: 40 new QSR outlets in tier-2 cities (QSR)', d.Y.c0, '+' + d.Y.c, P(Fin.irr([d.Y.c0, ...Array(d.Y.n).fill(d.Y.c)]))]]) +
+      tbl(['Project (₹ cr)', 't = 0', `Years 1–${d.X.n} (each)`, 'IRR (given)'], [['X: 3-year hospital facility-management contract (FS)', d.X.c0, '+' + d.X.c, P(Fin.irr([d.X.c0, ...Array(d.X.n).fill(d.X.c)]))], ['Y: 3-year kitchen-upgrade programme across 40 QSR outlets (QSR)', d.Y.c0, '+' + d.Y.c, P(Fin.irr([d.Y.c0, ...Array(d.Y.n).fill(d.Y.c)]))]]) +
       '<p class="muted">The IRRs are given: you do not need to calculate them. A project is worth accepting when its IRR is above its hurdle rate (equivalently, when its NPV at the hurdle rate is positive).</p>',
     solve(d) {
       const V = d.E + d.D, bu = Fin.unlever(d.bl, d.D / d.E, d.t);
@@ -168,7 +168,7 @@
       { key: 'buF', label: '(a) Unlevered beta of Facility Services', unit: 'x' },
       { key: 'wF', label: '(b) Hurdle rate (WACC) for Facility Services', unit: '%', tol: 0.0005 },
       { key: 'firm', label: '(c) Aravalli\'s firm-wide WACC', unit: '%' },
-      { key: 'nYd', label: '(d) NPV of project Y at the QSR hurdle rate', unit: 'cr', abs: 0.4 },
+      { key: 'nYd', label: '(d) NPV of project Y at the QSR hurdle rate (keep the hurdle rate to two decimals, e.g. 11.57%)', unit: 'cr', abs: 0.3 },
       { key: 'loss', label: '(e) Value lost by using the firm-wide WACC for both projects: the negative NPV of any project wrongly accepted plus the positive NPV of any project wrongly rejected, both measured at the divisional rates (enter a positive number)', unit: 'cr', abs: 0.5 }],
     hints: ['The comparables report D/V. Convert to D/E = (D/V)/(1 − D/V) before unlevering.',
       'The firm\'s β<sub>U</sub> is the asset-weighted average of the three divisional β<sub>U</sub>s. Two are known, so solve for the third. Then relever each division at <i>its own</i> target D/E and use <i>its own</i> spread.',

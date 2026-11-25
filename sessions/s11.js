@@ -292,7 +292,7 @@
     const setMode = m => { st.mode = m; spreadCtl.style.display = m === 'fixed' ? '' : 'none'; opCtl.style.display = m === 'fixed' ? 'none' : ''; draw(); };
     modeBox.append(h('div', { class: 'ctl' }, h('label', null, 'Cost of debt'), seg([{ v: 'rating', t: 'Spread follows rating' }, { v: 'fixed', t: 'Fixed spread' }], st.mode, setMode)));
     const presets = h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Presets:'),
-      ...[['Marriott Lodging \'88', { rf: 0.0895, mrp: 0.0563, bu: 0.4917, t: 0.34 }], ['Marriott CS \'88', { rf: 0.0895, mrp: 0.0563, bu: 1.0543, t: 0.34 }], ['Indian FMCG', { rf: 0.064, mrp: 0.073, bu: 0.75, t: 0.2517 }], ['Indian airline', { rf: 0.064, mrp: 0.073, bu: 1.15, t: 0.2517 }]].map(([n, v]) =>
+      ...[['Marriott Lodging \'88', { rf: 0.0895, mrp: 0.0563, bu: 0.4917, t: 0.34 }], ['Marriott CS \'88', { rf: 0.0895, mrp: 0.0563, bu: 1.0543, t: 0.34 }], ['Indian FMCG', { rf: 0.0734, mrp: 0.0692, bu: 0.75, t: 0.2517 }], ['Indian airline', { rf: 0.0734, mrp: 0.0692, bu: 1.15, t: 0.2517 }]].map(([n, v]) =>
         h('button', { class: 'btn small', onclick: () => { Object.assign(st, v); ctls.forEach(c => c.el.set(st[c.k])); draw(); } }, n)));
     const ctls = [
       { k: 'rf', el: slider('Risk-free rate R<sub>f</sub>', 0.02, 0.10, 0.0005, st.rf, v => P(v, 2), v => { st.rf = v; draw(); }) },

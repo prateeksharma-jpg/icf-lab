@@ -25,14 +25,14 @@
       insight: 'Its beta (1.07) is close to Marriott\'s (1.14): two firms in the same business carry similar systematic risk, which is why comparables work.' },
     { id: 'mcd', n: 'McDonald\'s', c: 'US', grp: 'The Marriott family today', mcap: 192.9, debt: 39.83, lease: 14.72, cash: 1.19, beta: 0.43, ebit: 12.393, int: 1.582, ind: ['Restaurant/Dining (US)', 0.78], bookE: -0.34,
       what: 'Most of its restaurants are run by franchisees, who pay McDonald\'s rent and royalties. It was a restaurant comparable in the case (beta 1.00 in 1987).',
-      insight: 'Its beta is low (0.43): rent and royalties from thousands of franchisees are steady even when the economy slows, so the business carries little systematic risk.' },
+      insight: 'Its beta is low (0.43): rent and royalties from thousands of franchisees are steady even when the economy slows, so the business carries little systematic risk. It is also far below the restaurant industry\'s beta, so its regression WACC is very low. Switch the beta source above to the bottom-up (industry) beta to see a more typical figure.' },
     { id: 'armk', n: 'Aramark', c: 'US', grp: 'The Marriott family today', mcap: 14.2, debt: 5.23, lease: 0.31, cash: 0.69, beta: 1.17, ebit: 0.917, int: 0.321, ind: ['Business & Consumer Services (US)', 0.81], bookE: 3.49,
       what: 'Runs food and facility services for hospitals, universities and stadiums: the same business as Marriott\'s 1988 Contract Services division.',
       insight: 'In 1988 there was no listed comparable for Contract Services, so its beta had to be backed out (1.05). Aramark is the kind of comparable Cohrs did not have.' },
     { id: 'ihcl', n: 'Indian Hotels (IHCL)', c: 'IN', grp: 'Indian hospitality & food', mcap: 129817, debt: 51, lease: 2745, cash: 4345, beta: 1.27, ebit: 3147, int: 221, ind: ['Hotel/Gaming (India)', 0.76],
       what: 'Tata group hotels: Taj, Vivanta and Ginger.',
       insight: 'Its own regression beta (1.27) is much higher than the bottom-up beta built from the Indian hotel industry. Switch the beta source above to see how much this one input moves the WACC.' },
-    { id: 'itch', n: 'ITC Hotels', c: 'IN', grp: 'Indian hospitality & food', mcap: 38385, debt: 0, lease: 74, cash: 2432, beta: 1.25, ebit: 1178, int: 55, ind: ['Hotel/Gaming (India)', 0.76], betaWarn: 'Listed only since January 2025, so its regression beta rests on little more than a year of data.',
+    { id: 'itch', n: 'ITC Hotels', c: 'IN', grp: 'Indian hospitality & food', mcap: 38385, debt: 0, lease: 74, cash: 2432, beta: 1.25, ebit: 1178, int: 55, ind: ['Hotel/Gaming (India)', 0.76], betaWarn: 'Listed only since January 2025, so its regression beta rests on less than two years of data.',
       what: 'Luxury hotels separated from ITC Ltd in January 2025 and listed as their own company.',
       insight: 'It has almost no debt, so its WACC is close to its cost of equity. With so little trading history, the bottom-up (industry) beta is the more reliable estimate.' },
     { id: 'jub', n: 'Jubilant FoodWorks', c: 'IN', grp: 'Indian hospitality & food', mcap: 28024, debt: 1745, lease: 3157, cash: 335, beta: 1.38, ebit: 1035, int: 436, ind: ['Restaurant/Dining (India)', 0.57],
@@ -148,7 +148,7 @@
     host.append(top);
     host.append(h('div', { class: 'grid side' }, h('div', { class: 'card tight' }, list), detail));
     host.append(h('div', { class: 'card' }, h('h3', null, 'All companies side by side'), h('div', { class: 'legend' }, h('span', null, h('i', { style: { background: 'var(--s1)', height: '10px' } }), 'E/V × Ke'), h('span', null, h('i', { class: 'hatch', style: { background: 'var(--s2)', height: '10px' } }), 'D/V × Kd(1 − t)')), cmp,
-      h('p', { class: 'muted' }, 'Compare companies within the same currency. Rupee WACCs are higher than dollar WACCs mainly because the Indian risk-free rate is higher (7.34% vs 5.05%).')));
+      h('p', { class: 'muted' }, 'Compare companies within the same currency. Rupee WACCs are higher than dollar WACCs because both inputs to the cost of equity are higher in India: the risk-free rate (7.34% vs 5.05%) and the market risk premium (6.92% vs 4.41%).')));
     host.append(notesCard());
 
     const ROWS = [['mcap', 'Market value of equity'], ['debt', 'Borrowings (ex-leases)'], ['lease', 'Lease liabilities'], ['cash', 'Cash & liquid investments'], ['beta', 'Regression beta'], ['ebit', 'EBIT (latest year)'], ['int', 'Interest / finance cost']];

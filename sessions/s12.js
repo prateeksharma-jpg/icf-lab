@@ -85,7 +85,8 @@
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--bad)' } }, '−$64 m'), h('div', { class: 'l' }, 'Amazon\'s book equity, June 2005, while the market valued its equity at over $15 billion')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v' }, '45×'), h('div', { class: 'l' }, 'Nestlé India: share price ÷ book value per share, 25 Nov 2026. Brands are not on the balance sheet.')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--bad)' } }, '0.70×'), h('div', { class: 'l' }, 'ONGC: the market values it below its book value, because it expects oil and gas earnings to shrink.'))),
-      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Book value records history (what assets cost); value looks forward (what they will pay). That is why we value shares from their future dividends.')));
+      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Book value records history (what assets cost); value looks forward (what they will pay). That is why we value shares from their future dividends.'),
+      h('p', { class: 'faint', style: { fontSize: '.8rem' }, html: 'Sources: Nestlé India price ₹1,358 and book value per share ₹30.0 from <a href="https://www.screener.in/company/NESTLEIND/consolidated/" target="_blank" rel="noopener">screener.in: NESTLEIND</a>; ONGC price ₹222 and book value per share ₹318 from <a href="https://www.screener.in/company/ONGC/consolidated/" target="_blank" rel="noopener">screener.in: ONGC</a> (both 25 Nov 2026, consolidated). Amazon figures from the class slides.' })));
 
     el.append(h('div', { class: 'card' },
       h('h2', null, '3 · The session in one picture'),
@@ -369,7 +370,7 @@
       ctl.innerHTML = '';
       ctl.append(slider('Company today as a share of the economy', 0.0001, 0.05, 0.0001, st.s0, v => P(v, 2), v => { st.s0 = v; draw(); }),
         slider('Company growth a year', 0, 0.40, 0.001, st.gc, v => P(v, 1), v => { st.gc = v; draw(); }),
-        slider('Economy growth a year (nominal)', 0, 0.12, 0.001, st.ge, v => P(v, 1), v => { st.ge = v; draw(); }));
+        slider('Economy growth a year', 0, 0.12, 0.001, st.ge, v => P(v, 1), v => { st.ge = v; draw(); }));
     }
     function draw() {
       const f = (1 + st.gc) / (1 + st.ge), n = f > 1 ? Math.log(1 / st.s0) / Math.log(f) : Infinity;

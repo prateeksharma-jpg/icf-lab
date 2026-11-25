@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ICF Learning Lab</title>
-<meta name="description" content="Interactive learning lab for Introduction to Corporate Finance, IIM Udaipur: cost of capital, hurdle rates, the Marriott case, real-company WACCs and real-world cases.">
+<meta name="description" content="Interactive learning lab for Introduction to Corporate Finance, IIM Udaipur: cost of capital and the Marriott case, valuing equity with dividend discount models and PVGO, real-company data and real-world cases.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Cpath d='M7 23l6-7 4 4 8-10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=20">
+<link rel="stylesheet" href="assets/style.css?v=21">
 </head>
 <body>
 <header class="topbar">
@@ -23,27 +23,55 @@
   </div>
 </header>
 <main id="main"></main>
-<div class="footer">Built for ICF Sessions 11–20. Case data: HBS 9-289-047, <i>Marriott Corporation: The Cost of Capital</i> (Abridged). Market data are approximate teaching inputs as of Nov 2026. Your progress is saved only in this browser.</div>
+<div class="footer" id="footer">Built for ICF Sessions 11–20. Market data are approximate teaching inputs as of Nov 2026; every tab lists its sources. Your progress is saved only in this browser.</div>
 
-<script src="assets/core.js?v=20"></script>
-<script src="sessions/s11-problems.js?v=20"></script>
-<script src="sessions/s11-marriott.js?v=20"></script>
-<script src="sessions/s11-data.js?v=20"></script>
-<script src="sessions/s11-notes.js?v=20"></script>
-<script src="sessions/s11.js?v=20"></script>
+<script src="assets/core.js?v=21"></script>
+<script src="sessions/s11-problems.js?v=21"></script>
+<script src="sessions/s11-marriott.js?v=21"></script>
+<script src="sessions/s11-data.js?v=21"></script>
+<script src="sessions/s11-notes.js?v=21"></script>
+<script src="sessions/s11.js?v=21"></script>
+<script src="sessions/s12-problems.js?v=21"></script>
+<script src="sessions/s12-data.js?v=21"></script>
+<script src="sessions/s12-notes.js?v=21"></script>
+<script src="sessions/s12.js?v=21"></script>
 <script>
 (function () {
   var SESSIONS = [
-    { n: 11, t: 'Cost of capital & Marriott', ready: true },
-    { n: 12 }, { n: 13 }, { n: 14 }, { n: 15 }, { n: 16 }, { n: 17 }, { n: 18 }, { n: 19 }, { n: 20 }];
-  var nav = document.getElementById('sessions');
+    { n: 11, t: 'Cost of capital & Marriott', mod: 'S11', foot: 'Session 11 case data: HBS 9-289-047, <i>Marriott Corporation: The Cost of Capital</i> (Abridged).' },
+    { n: 12, t: 'Valuing equity: DDM & PVGO', mod: 'S12' },
+    { n: 13 }, { n: 14 }, { n: 15 }, { n: 16 }, { n: 17 }, { n: 18 }, { n: 19 }, { n: 20 }];
+  var READY = SESSIONS.filter(function (s) { return s.mod; });
+  var LATEST = READY[READY.length - 1].n;
+  var nav = document.getElementById('sessions'), main = document.getElementById('main'), tabs = document.getElementById('tabs');
+  var foot = document.getElementById('footer'), footBase = foot.innerHTML;
+  var chips = {}, current = null;
   SESSIONS.forEach(function (s) {
     var b = document.createElement('button');
-    b.className = 'chip' + (s.ready ? ' active' : '');
+    b.className = 'chip';
     b.textContent = 'S' + s.n + (s.t ? ' · ' + s.t : ' · soon');
-    if (!s.ready) { b.disabled = true; b.title = 'Coming soon'; }
-    nav.appendChild(b);
+    if (!s.mod) { b.disabled = true; b.title = 'Coming soon'; }
+    else b.addEventListener('click', function () { if (current !== s.n) location.hash = '#s' + s.n; });
+    chips[s.n] = b; nav.appendChild(b);
   });
+  // #s12/cases -> session 12, tab cases; #s12 -> session 12; old links without a session (#cases, #marriott) -> session 11
+  function parse() {
+    var hs = (location.hash || '').replace('#', ''), m = hs.match(/^s(\d+)(?:\/(.*))?$/);
+    if (m && READY.some(function (s) { return s.n === +m[1]; })) return { n: +m[1], tab: m[2] || '' };
+    if (hs && !/^notes-/.test(hs)) return { n: 11, tab: hs };
+    return { n: LATEST, tab: '' };
+  }
+  function route() {
+    var r = parse(), s = READY.filter(function (x) { return x.n === r.n; })[0], mod = window[s.mod];
+    if (current === r.n) { if (r.tab && mod.TABS.some(function (t) { return t.id === r.tab; })) mod.go(r.tab, true); return; }
+    current = r.n;
+    main.innerHTML = ''; tabs.innerHTML = '';
+    Object.keys(chips).forEach(function (k) { chips[k].classList.toggle('active', +k === r.n); });
+    foot.innerHTML = footBase + (s.foot ? ' ' + s.foot : '');
+    document.title = 'ICF Learning Lab · Session ' + r.n;
+    mod.mount(main, tabs, r.tab);
+  }
+  addEventListener('hashchange', route);
   // theme toggle: explicit choice is remembered per viewer
   var root = document.documentElement, btn = document.getElementById('theme-btn');
   try { var saved = localStorage.getItem('icf-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
@@ -53,7 +81,7 @@
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('icf-theme', next); } catch (e) {}
   });
-  S11.mount(document.getElementById('main'), document.getElementById('tabs'));
+  route();
 })();
 </script>
 </body>

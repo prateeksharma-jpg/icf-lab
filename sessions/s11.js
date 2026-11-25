@@ -15,7 +15,7 @@
     { id: 'concepts', t: 'Concept checks' },
     { id: 'cases', t: 'Real-world cases' }];
 
-  function mount(root, tabbar) {
+  function mount(root, tabbar, want) {
     TABS.forEach(tb => {
       tabbar.append(h('button', { class: 'tab', 'data-tab': tb.id, onclick: () => go(tb.id) }, tb.t));
       root.append(h('section', { class: 'panel', id: 'panel-' + tb.id }));
@@ -28,9 +28,8 @@
     renderConcepts($('#panel-concepts'));
     renderPractice($('#panel-cases'));
     addNotes();
-    let want = (location.hash || '').replace('#', ''); if (want === 'practice') want = 'cases';
+    if (want === 'practice') want = 'cases';
     go(TABS.some(t => t.id === want) ? want : 'start', true);
-    addEventListener('hashchange', () => { let w = location.hash.replace('#', ''); if (w === 'practice') w = 'cases'; if (TABS.some(t => t.id === w)) go(w, true); });
   }
   // Detailed self-study notes (sessions/s11-notes.js). Start tab: right after the hero, first section open.
   // Other tabs: a full notes card at the bottom, with a link to it at the top.
@@ -58,7 +57,7 @@
   function go(id, noPush) {
     $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
     $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
-    if (!noPush) history.replaceState(null, '', '#' + id);
+    if (!noPush) history.replaceState(null, '', '#s11/' + id);
     window.scrollTo({ top: 0 });
     const p = $('#panel-' + id); if (p && p._onShow) p._onShow();
   }
@@ -458,5 +457,5 @@
     upd();
   }
 
-  window.S11 = { mount, TABS };
+  window.S11 = { mount, TABS, go };
 })();

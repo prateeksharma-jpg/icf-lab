@@ -167,7 +167,7 @@
   }
 
   // ---------- answer checking ----------
-  function parseNum(v) { if (v == null) return NaN; const t = String(v).replace(/[,%₹\s]/g, ''); return t === '' ? NaN : Number(t); }
+  function parseNum(v) { if (v == null) return NaN; const t = String(v).replace(/[,%₹\s]/g, '').replace(/[−–]/g, '-'); return t === '' ? NaN : Number(t); }
   function isClose(user, ans, unit, tol, abs) {
     if (!isFinite(user)) return false;
     if (abs != null) return Math.abs(user - ans) <= abs + 1e-12;

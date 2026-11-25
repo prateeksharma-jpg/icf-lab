@@ -14,7 +14,7 @@
     { id: 'reality', t: 'How high can growth go?' },
     { id: 'real', t: 'Real companies' },
     { id: 'concepts', t: 'Concept checks' },
-    { id: 'cases', t: 'Real-world cases' }];
+    { id: 'cases', t: 'Concept application practice' }];
 
   function mount(root, tabbar, want) {
     TABS.forEach(tb => {
@@ -69,7 +69,7 @@
       h('div', { class: 'row', style: { marginTop: '10px' } },
         h('button', { class: 'btn primary', onclick: () => go('builder') }, 'Build a valuation →'),
         h('button', { class: 'btn', onclick: () => go('real') }, 'What are Indian prices assuming?'),
-        h('button', { class: 'btn', onclick: () => go('cases') }, 'Real-world cases'))));
+        h('button', { class: 'btn', onclick: () => go('cases') }, 'Concept application practice'))));
 
     el.append(h('div', { class: 'card' },
       h('h2', null, '1 · Three inputs, one formula'),
@@ -452,7 +452,7 @@
     const prog = h('div', { class: 'progressbar' }, h('div', { style: { width: '0%' } }));
     const lab = h('span', { class: 'muted' });
     const upd = () => { const st = Store.get('icf-progress', {}); const n = all.filter(p => st[p.id] && st[p.id].solved).length; prog.firstChild.style.width = (n / all.length * 100) + '%'; lab.textContent = `${n} / ${all.length} solved`; };
-    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Apply the concepts'), h('h2', null, `${all.length} real-world cases`),
+    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Concept application practice'), h('h2', null, `Apply the concepts: ${all.length} real-world cases`),
       h('p', { class: 'lede', html: 'Each case is a real-world situation that uses several steps of this session. The first two are <b>medium</b>, to warm up; the last three are <b>hard</b>. Work each one out first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%) and rupee amounts without the ₹ sign. Answers within ±0.10 percentage points, or ±1% for rupee amounts, count as correct, so rounding at intermediate steps is fine.' }),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab),
       h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Case</th><th>Level</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.level}</td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));

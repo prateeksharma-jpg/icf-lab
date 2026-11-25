@@ -13,7 +13,7 @@
     { id: 'marriott', t: 'Marriott lab' },
     { id: 'real', t: 'Real companies' },
     { id: 'concepts', t: 'Concept checks' },
-    { id: 'cases', t: 'Real-world cases' }];
+    { id: 'cases', t: 'Concept application practice' }];
 
   function mount(root, tabbar, want) {
     TABS.forEach(tb => {
@@ -72,7 +72,7 @@
       h('div', { class: 'row', style: { marginTop: '10px' } },
         h('button', { class: 'btn primary', onclick: () => go('hurdle') }, 'Why one rate is not enough →'),
         h('button', { class: 'btn', onclick: () => go('marriott') }, 'Jump to the Marriott lab'),
-        h('button', { class: 'btn', onclick: () => go('cases') }, 'Real-world cases'))));
+        h('button', { class: 'btn', onclick: () => go('cases') }, 'Concept application practice'))));
 
     // Balance-sheet blender
     const st = { e: 0.6, ke: 0.20, kd: 0.10, t: 0.30 };
@@ -390,14 +390,14 @@
         h('div', { class: 'statbox stat' }, h('div', { class: 'v' }, '₹100 → ₹200 → ₹100'), h('div', { class: 'l' }, 'Year 1: +100%, Year 2: −50%')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--bad)' } }, 'AM = 25%'), h('div', { class: 'l' }, '(100% − 50%) ÷ 2: says you earned 25% a year')),
         h('div', { class: 'statbox stat' }, h('div', { class: 'v', style: { color: 'var(--good)' } }, 'GM = 0%'), h('div', { class: 'l' }, '[(2)(0.5)]^½ − 1: what your wealth actually did'))),
-      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Real-world case 3 (last step) shows how much the arithmetic premium moves a WACC.')));
+      h('p', { class: 'muted', style: { marginTop: '10px' } }, 'Case 3 in Concept application practice (last step) shows how much the arithmetic premium moves a WACC.')));
 
     // Then and now
     const tn = h('div', { id: 'then-now' });
     el.append(tn);
     el._fillThenNow = () => { tn.innerHTML = ''; if (window.S11_THENNOW) tn.append(window.S11_THENNOW()); };
     el._fillThenNow();
-    el.append(h('div', { class: 'card' }, h('h3', null, 'Use the case on a new company'), h('p', { class: 'muted' }, 'Real-world case 5 (Marriott in Rajasthan) runs the whole Marriott recipe on a new company, then asks what a single firm-wide rate costs in NPV.'), h('button', { class: 'btn primary', onclick: () => { go('cases'); setTimeout(() => { const t = $('#prob-s11-P4'); if (t) { t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); } }, 50); } }, 'Go to case 5 →')));
+    el.append(h('div', { class: 'card' }, h('h3', null, 'Use the case on a new company'), h('p', { class: 'muted' }, 'Case 5 in Concept application practice (Marriott in Rajasthan) runs the whole Marriott recipe on a new company, then asks what a single firm-wide rate costs in NPV.'), h('button', { class: 'btn primary', onclick: () => { go('cases'); setTimeout(() => { const t = $('#prob-s11-P4'); if (t) { t.classList.add('open'); t.scrollIntoView({ behavior: 'smooth' }); } }, 50); } }, 'Go to case 5 →')));
     draw();
   }
 
@@ -446,7 +446,7 @@
     const prog = h('div', { class: 'progressbar' }, h('div', { style: { width: '0%' } }));
     const lab = h('span', { class: 'muted' });
     const upd = () => { const st = Store.get('icf-progress', {}); const n = all.filter(p => st[p.id] && st[p.id].solved).length; prog.firstChild.style.width = (n / all.length * 100) + '%'; lab.textContent = `${n} / ${all.length} solved`; };
-    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Apply the concepts'), h('h2', null, `${all.length} real-world cases`),
+    el.append(h('div', { class: 'card' }, h('div', { class: 'kicker' }, 'Concept application practice'), h('h2', null, `Apply the concepts: ${all.length} real-world cases`),
       h('p', { class: 'lede', html: 'Each case is a real-world situation that uses several steps of this session. The first two are <b>medium</b>, to warm up; the last three are <b>hard</b>. Work each one out first, then press <b>Check answers</b>. The step-by-step solution unlocks only after you have checked. Enter percentages as numbers (12.34 for 12.34%). Answers within ±0.10 percentage points, or ±1% for betas and amounts, count as correct, so rounding at intermediate steps is fine.' }),
       h('div', { class: 'row' }, h('div', { style: { flex: 1 } }, prog), lab),
       h('div', { class: 'tblwrap', style: { marginTop: '12px' }, html: '<table class="tbl"><tr><th>Case</th><th>Level</th><th>What it covers</th></tr>' + all.map(p => `<tr><td style="white-space:nowrap"><a href="#cases" data-prob="${p.id}">${p.code}</a></td><td style="text-align:left">${p.level || 'Hard'}</td><td style="text-align:left">${p.covers}</td></tr>`).join('') + '</table>' })));
